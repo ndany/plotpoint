@@ -244,3 +244,19 @@ have a `v1`.
 per-document folder never collides and keeps each document's images together.
 **Status:** decided 2026-11-14, not built yet (`HANDOFF.md` backlog, "Markdown
 figures beside the document", after C12 writes the `.md` file).
+
+## D-26: npm overrides for transitive dev-tool fixes
+
+**Chosen:** when a security fix exists for a transitive dependency of the npm dev
+tooling but the direct dependency doesn't pull it in yet, pin the fixed version
+in `package.json` `overrides` (first used for `katex`, under `markdownlint`).
+**Alternatives:** wait for the upstream package to widen its range (the alert
+stays open meanwhile); accept the alert because the tooling is dev-only and not
+shipped in the plugin.
+**Rationale:** clears the alert now at no cost to the plugin; markdownlint only
+loads the overridden package for math syntax, which these docs don't use, and
+every gate passes with it.
+**Cost:** the override must be removed by hand once upstream catches up, or it
+can hold the package back later.
+**Revisit:** each npm Dependabot update; drop the override when `npm ls` shows the
+direct dependency resolves a fixed version by itself.

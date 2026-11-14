@@ -107,7 +107,7 @@ rendering change, render the fixture and **look** at the output.
 When a change touches the skill, a decision or the structure, update every
 surface that describes it before calling the change done:
 
-- `HANDOFF.md`: state and next steps; **Backlog is the single index of deferred work**
+- `HANDOFF.md`: state and next steps; **Backlog is the single index of deferred work** (rows keep a Status; never delete them)
 - `README.md`: tagline, what you get, formats and visual types, install, layout
 - Repo description (GitHub "About"), `plugin.json`, `marketplace.json`: identical to the README tagline
 - `CLAUDE.md`, `docs/architecture.md`, `docs/decisions.md`

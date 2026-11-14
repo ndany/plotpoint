@@ -3,7 +3,7 @@
 > **What this is.** The living active-state document. Read it first when picking
 > up work. Overwrite as work progresses; don't append indefinitely. When an item
 > matures, move it to its permanent home (`docs/decisions.md`, the skill's
-> `DESIGN.md`) and remove it here.
+> `DESIGN.md`). Backlog rows are never deleted: set their Status instead.
 >
 > **Last updated:** 2026-11-14. v0.1.0 committed as provided (signed, from the
 > maintainer's machine, `docs/decisions.md` D-18) and pushed; CI green. Hands-on
@@ -51,13 +51,13 @@
    | C1 | Status shows in the artifact itself: a visible DRAFT or CHECKS FAILED mark (today the draft marker is an HTML comment, and failed renders write polished files) | open |
    | C2 | Slide PNGs render the same on macOS and Windows (they depend on locally installed fonts) | open |
    | C3 | Any edit to the caller's takeaway sets `headline_status: draft` (2 of 2 runs changed the wording and kept `confirmed`; one didn't say so) | open |
-   | C4 | Dependency bootstrap for an installed skill: where the venv goes, `python` / `python3` / `py`, externally managed Pythons (PEP 668) | open |
+   | C4 | Dependency bootstrap for an installed skill. Decided 2026-11-14: `uv run` when uv is installed (PEP 723 metadata in `visualize.py`, kept identical to `requirements.txt` by a test); otherwise `visualize.py` checks its imports first and stops with the exact per-OS commands (`py` / `python3`, a venv in the user cache folder, PEP 668), and `SKILL.md` says to show that message to the user, never work around it | open |
    | C5 | CI on `windows-latest` and `macos-latest` (with Dependabot's actions bumps, D-24), plus one manual try-it run on Windows | open |
    | C6 | `capacity` warns or fails when the folded "Other" bar outranks a shown or highlighted bar (it passed while contradicting the headline) | open |
    | C7 | `headline_numbers` reads suffixed numbers (`212k`, `1.2M`, `3bn`) as numbers (today they're skipped and any value passes) | open |
    | C8 | Investigate: a bare threshold passes if it's anywhere inside the data's range; promote to a fix if it lets a wrong number through | open |
-   | C9 | Dev dependency updates applied locally (D-24): pytest, ruff, `markdownlint-cli2` 0.24.1 | open |
-   | C10 | `render --checks-only` renders and writes every file, but its name says "check only" (the tour misread it). Rename it (for example `--quiet`) and state each `render` flag's purpose and reason in one place (`spec.md`), with the CLI help, `SKILL.md` and `try-it.md` pointing there. Recorded runs keep the old name (verbatim) | open |
+   | C9 | Dev dependency updates applied locally (D-24): pytest 9.2.0, ruff 0.17.4, `markdownlint-cli2` 0.24.1, plus an npm override for one transitive package that 0.24.1 doesn't update (D-26) | done |
+   | C10 | `render --checks-only` renders and writes every file, but its name says "check only" (the tour misread it). Rename it (for example `--quiet`) and state each `render` flag's purpose and reason in one place (`spec.md`), with the CLI help, `SKILL.md` and `try-it.md` pointing there. Recorded runs keep the old name (verbatim) Also (pulled in 2026-11-14): the tour's sandbox copy step leaves out the answer files, with a spoiler note pointing to them (was the Backlog row "Tour and the answer key") | open |
    | C11 | `callouts` fails or warns when a point callout is pinned on a bar chart (bars don't draw them, yet the check passes); drawing them stays in the Backlog | open |
    | C12 | Markdown has no deliverable file: its output exists only as a `snippet` inside `result.json`, while every other format writes one (the tour needed a `python -c` step to see it). Write `<id>-md-document.md`, with image links that resolve from that file's folder, and explain each format's deliverable versus its chart-only by-product (`.svg`, `.mmd`) in `try-it.md` and `spec.md` | open |
 
@@ -73,45 +73,47 @@
 ## Backlog
 
 Single triage index for deferred work. Each item: kind (Defect, Improvement,
-Docs, Process), what, why deferred, cost of deferring, when to revisit.
+Docs, Process), status (`open`, `moved → <ID>` when pulled into planned work,
+`done (<date>)`), what, why deferred, cost of deferring, when to revisit. Rows
+stay when their status changes.
 "(tour)" marks items from the 2026-11-14 hands-on tour.
 
-| Kind | Item | Why deferred | Cost of deferring | Revisit when |
-| --- | --- | --- | --- | --- |
-| Process | **Branch + PR workflow**, then branch protection on `main` | Sole maintainer, early stage | No review or CI gate before `main`; mitigated by hooks and `check-all.sh` | Planned by the maintainer; at the latest a stable v1, a second contributor, or regular outside use (D-17, D-24) |
-| Defect | **Label placement control** (offsets, side; flip a label that would cross an edge) | Automatic placement works for the fixture | A callout can sit on a gridline (T3 r3) or be clipped past the right edge with every check passing (tour); only looking catches it | Real-data use hits it twice |
-| Improvement | **Draw point callouts on bar charts** (either orientation); until then C11 makes the check say so (tour) | C11 removes the false pass; drawing needs placement work | Use a `rule` or `note` on bars | With label placement control |
-| Defect | **Ties in profile `extreme_rows`** are resolved silently (two branches at 4.5 FTE; one is named) (tour) | The tie is visible in the data and samples | Claude may call one of two tied rows "the" extreme | The next profile change |
-| Improvement | **Hub marketplace** listing several repos | Only one plugin so far | Each repo is added separately | A second plugin exists (D-1) |
-| Improvement | **Domain plugin** (metric definitions and conventions for a field), generic and public | Domain not chosen; private planning kept outside the repo | plotpoint has no domain conventions | A domain and its metric list are chosen |
-| Improvement | **Markdown figures beside the document:** default `out_dir` of `figures/<doc-name>/` next to the document, documented in the guide and `spec.md` (D-25) (tour) | Decided in the tour; C12 makes the Markdown file exist first | Callers pick `out_dir` themselves | After C12, at the next render change |
-| Improvement | **Wording checks:** qualitative claims and materiality ("a new high" at +1%; "no numbers to check" on a sentence); also fix the reference answer, which amplified the caller's takeaway the same way (tour) | Checks verify numbers; judging wording is a model task | Overstated wording passes every check | With C3, or when real use publishes an overstated claim |
-| Improvement | **Advise drawing the headline's claim:** a total → stacked bars or a total line; two series on very different scales → separate charts (tour) | Guidance gap: a run explained it well when asked but didn't apply it by default | The reference v1 states a total it doesn't draw | The next `SKILL.md` change (needs a recorded run) |
-| Improvement | **Advise labelling the contrast points** the narrative leans on; the caller decides (tour) | One run did it unprompted; not in the guidance | Varies run to run | The next `SKILL.md` change |
-| Improvement | **Choose outlier handling by narrative** (log scale, exclude, or another visual) (tour) | Runs default to accept or callout | The alternatives aren't weighed | The next `SKILL.md` change |
-| Improvement | **"Missing evidence" recommendation kind** for a question the data can't answer (tour) | `kind: other` works (a run used it) | Such advice is less visible and can't be counted | A second real run needs it |
-| Improvement | **More specific failure messages** ("48 belongs to Riverside", "18% is a fall, not a rise") (tour) | Messages already say what failed and how to fix it | Slower fix loop | With C7 and C8 |
-| Improvement | **Warn when an axis title is a raw column name** (`staff_fte`) (tour) | `names` fixes it when set | Raw names can ship | The next checks change |
-| Improvement | **`render-plan` command:** render every visual in a storyboard (`check-plan` already builds the requests, for dry runs only) (tour) | Callers can write the requests | Each mode D run writes its own glue and picks `source` and `as_of` itself | The next engine change, or the real-data mode D run |
-| Improvement | **`data_note` in render requests** (tour) | Workaround documented: a YAML comment above `data` | How a derived table was built isn't in the request or result | Real use builds derived tables |
-| Improvement | **Headline-number visibility check** (warn when a headline number appears in no callout, label or plotted value) | Needs the drawn labels per technique; the "look at it" step covers it | A number can be derivable but not visible (T2b) | Real use misses one |
-| Improvement | **Profile noise** for tiny all-distinct text columns | Minor (T2b) | Slightly longer profiles | Large-dataset use |
-| Improvement | **`preview` command** (chart with headline and source, as a PNG) | Step 5 works with `vl_convert.svg_to_png` | Viewing takes a manual step (T3c) | Real use finds it slow |
-| Improvement | **More visual types** (small multiples, slope, dot plot, heatmap) | v1 scope | Drawn by hand following dataviz | Real use asks for one |
-| Improvement | **Tables and sentences as slide images** | v1 scope | Use `html/slide` | A deck needs them |
-| Improvement | **Dark-mode SVG variants** | v1 scope | Static SVGs are light only | A dark page uses plotpoint |
-| Improvement | **Excel and Parquet input** | Heavy dependencies (D-9) | Callers export to CSV | A caller needs them |
-| Improvement | **Bin edges as derivable numbers** in the headline check | Vega-Lite picks bins; matching them needs its binning logic | A histogram note can't cite "45–50" | A real histogram headline needs it |
-| Improvement | **Mermaid legends** (need Mermaid 11.17+) | Sandbox has 11.16 | Series named in text under the chart | VS Code / GitHub ship 11.17 |
-| Docs | **Tour for VS Code and Desktop sessions:** section 4's install is terminal-only (tour) | Sessions still found the skill (3–5 tool calls) | Non-terminal readers skip the install step | With C4 |
-| Docs | **Tour and the answer key:** the sandbox copy excludes `storyboard-golden.yaml` and `expected.md` so test sessions stay blind; a spoiler note points to them once the reader has formed a view (tour) | Done by hand for this tour | A session in the sandbox can read the answers | The next `try-it.md` change, before C-fix re-runs if possible |
-| Docs | **Draw the draft's 48-bar chart** in `drafts/review.md` (now described in prose) (tour) | Changes mode A's input; needs a re-recorded run | The weak visual is imagined, not seen | The next fixture change |
-| Docs | **GitHub topics `dashboards`, `dashboard-design`** (dropped 2026-11-14) (tour) | Dashboard-chart guidance and the `dashboard` preset exist but aren't tested; plotpoint doesn't build dashboards | Less discoverable for dashboard searches | A dashboard request is recorded and tested |
-| Process | **Plugin icon** (square PNG at `plugins/plotpoint/.claude-plugin/icon.png`) | Only the plugin directory requires it | Directory submission blocked | Before submitting to the directory |
-| Process | **Automated skill evaluation** (`claude plugin eval`) | Recorded runs cover v1 | Model-behavior regressions found by hand | Second release, or real-data findings |
-| Process | **Palette re-validation** with dataviz's validator | Done for v1 (amber WARN on contrast) | — | Any `config/theme.yaml` change |
-| Process | **Rust crate name check** for "plotpoint" | A crate exists; only matters for a Rust package | — | Before publishing any package |
-| Process | **Prose style lint** (e.g. Vale) | markdownlint covers structure only | Style drift possible | A second skill is added |
+| Kind | Status | Item | Why deferred | Cost of deferring | Revisit when |
+| --- | --- | --- | --- | --- | --- |
+| Process | open | **Branch + PR workflow**, then branch protection on `main` | Sole maintainer, early stage | No review or CI gate before `main`; mitigated by hooks and `check-all.sh` | Planned by the maintainer; at the latest a stable v1, a second contributor, or regular outside use (D-17, D-24) |
+| Defect | open | **Label placement control** (offsets, side; flip a label that would cross an edge) | Automatic placement works for the fixture | A callout can sit on a gridline (T3 r3) or be clipped past the right edge with every check passing (tour); only looking catches it | Real-data use hits it twice |
+| Improvement | open | **Draw point callouts on bar charts** (either orientation); until then C11 makes the check say so (tour) | C11 removes the false pass; drawing needs placement work | Use a `rule` or `note` on bars | With label placement control |
+| Defect | open | **Ties in profile `extreme_rows`** are resolved silently (two branches at 4.5 FTE; one is named) (tour) | The tie is visible in the data and samples | Claude may call one of two tied rows "the" extreme | The next profile change |
+| Improvement | open | **Hub marketplace** listing several repos | Only one plugin so far | Each repo is added separately | A second plugin exists (D-1) |
+| Improvement | open | **Domain plugin** (metric definitions and conventions for a field), generic and public | Domain not chosen; private planning kept outside the repo | plotpoint has no domain conventions | A domain and its metric list are chosen |
+| Improvement | open | **Markdown figures beside the document:** default `out_dir` of `figures/<doc-name>/` next to the document, documented in the guide and `spec.md` (D-25) (tour) | Decided in the tour; C12 makes the Markdown file exist first | Callers pick `out_dir` themselves | After C12, at the next render change |
+| Improvement | open | **Wording checks:** qualitative claims and materiality ("a new high" at +1%; "no numbers to check" on a sentence); also fix the reference answer, which amplified the caller's takeaway the same way (tour) | Checks verify numbers; judging wording is a model task | Overstated wording passes every check | With C3, or when real use publishes an overstated claim |
+| Improvement | open | **Advise drawing the headline's claim:** a total → stacked bars or a total line; two series on very different scales → separate charts (tour) | Guidance gap: a run explained it well when asked but didn't apply it by default | The reference v1 states a total it doesn't draw | The next `SKILL.md` change (needs a recorded run) |
+| Improvement | open | **Advise labelling the contrast points** the narrative leans on; the caller decides (tour) | One run did it unprompted; not in the guidance | Varies run to run | The next `SKILL.md` change |
+| Improvement | open | **Choose outlier handling by narrative** (log scale, exclude, or another visual) (tour) | Runs default to accept or callout | The alternatives aren't weighed | The next `SKILL.md` change |
+| Improvement | open | **"Missing evidence" recommendation kind** for a question the data can't answer (tour) | `kind: other` works (a run used it) | Such advice is less visible and can't be counted | A second real run needs it |
+| Improvement | open | **More specific failure messages** ("48 belongs to Riverside", "18% is a fall, not a rise") (tour) | Messages already say what failed and how to fix it | Slower fix loop | With C7 and C8 |
+| Improvement | open | **Warn when an axis title is a raw column name** (`staff_fte`) (tour) | `names` fixes it when set | Raw names can ship | The next checks change |
+| Improvement | open | **`render-plan` command:** render every visual in a storyboard (`check-plan` already builds the requests, for dry runs only) (tour) | Callers can write the requests | Each mode D run writes its own glue and picks `source` and `as_of` itself | The next engine change, or the real-data mode D run |
+| Improvement | open | **`data_note` in render requests** (tour) | Workaround documented: a YAML comment above `data` | How a derived table was built isn't in the request or result | Real use builds derived tables |
+| Improvement | open | **Headline-number visibility check** (warn when a headline number appears in no callout, label or plotted value) | Needs the drawn labels per technique; the "look at it" step covers it | A number can be derivable but not visible (T2b) | Real use misses one |
+| Improvement | open | **Profile noise** for tiny all-distinct text columns | Minor (T2b) | Slightly longer profiles | Large-dataset use |
+| Improvement | open | **`preview` command** (chart with headline and source, as a PNG) | Step 5 works with `vl_convert.svg_to_png` | Viewing takes a manual step (T3c) | Real use finds it slow |
+| Improvement | open | **More visual types** (small multiples, slope, dot plot, heatmap) | v1 scope | Drawn by hand following dataviz | Real use asks for one |
+| Improvement | open | **Tables and sentences as slide images** | v1 scope | Use `html/slide` | A deck needs them |
+| Improvement | open | **Dark-mode SVG variants** | v1 scope | Static SVGs are light only | A dark page uses plotpoint |
+| Improvement | open | **Excel and Parquet input** | Heavy dependencies (D-9) | Callers export to CSV | A caller needs them |
+| Improvement | open | **Bin edges as derivable numbers** in the headline check | Vega-Lite picks bins; matching them needs its binning logic | A histogram note can't cite "45–50" | A real histogram headline needs it |
+| Improvement | open | **Mermaid legends** (need Mermaid 11.17+) | Sandbox has 11.16 | Series named in text under the chart | VS Code / GitHub ship 11.17 |
+| Docs | open | **Tour for VS Code and Desktop sessions:** section 4's install is terminal-only (tour) | Sessions still found the skill (3–5 tool calls) | Non-terminal readers skip the install step | With C4 |
+| Docs | moved → C10 (2026-11-14) | **Tour and the answer key:** the sandbox copy excludes `storyboard-golden.yaml` and `expected.md` so test sessions stay blind; a spoiler note points to them once the reader has formed a view (tour) | Done by hand for this tour | A session in the sandbox can read the answers | The next `try-it.md` change, before C-fix re-runs if possible |
+| Docs | open | **Draw the draft's 48-bar chart** in `drafts/review.md` (now described in prose) (tour) | Changes mode A's input; needs a re-recorded run | The weak visual is imagined, not seen | The next fixture change |
+| Docs | open | **GitHub topics `dashboards`, `dashboard-design`** (dropped 2026-11-14) (tour) | Dashboard-chart guidance and the `dashboard` preset exist but aren't tested; plotpoint doesn't build dashboards | Less discoverable for dashboard searches | A dashboard request is recorded and tested |
+| Process | open | **Plugin icon** (square PNG at `plugins/plotpoint/.claude-plugin/icon.png`) | Only the plugin directory requires it | Directory submission blocked | Before submitting to the directory |
+| Process | open | **Automated skill evaluation** (`claude plugin eval`) | Recorded runs cover v1 | Model-behavior regressions found by hand | Second release, or real-data findings |
+| Process | open | **Palette re-validation** with dataviz's validator | Done for v1 (amber WARN on contrast) | — | Any `config/theme.yaml` change |
+| Process | open | **Rust crate name check** for "plotpoint" | A crate exists; only matters for a Rust package | — | Before publishing any package |
+| Process | open | **Prose style lint** (e.g. Vale) | markdownlint covers structure only | Style drift possible | A second skill is added |
 
 ## Context to load for a fresh session
 
