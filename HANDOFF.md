@@ -5,9 +5,9 @@
 > matures, move it to its permanent home (`docs/decisions.md`, the skill's
 > `DESIGN.md`) and remove it here.
 >
-> **Last updated:** 2026-11-01. v1 built and tested in a cloud session; not yet
-> committed. The first content commit is made **signed, from the maintainer's
-> machine** (`docs/decisions.md` D-18).
+> **Last updated:** 2026-11-14. v0.1.0 committed as provided (signed, from the
+> maintainer's machine, `docs/decisions.md` D-18) and pushed; CI green. Hands-on
+> tour done; its findings are being triaged.
 
 ## Current state
 
@@ -26,18 +26,15 @@
   `scripts/build_examples.py`.
 - All gates pass (`scripts/check-all.sh`): markdownlint, ruff, shellcheck,
   pytest, frontmatter, privacy, `claude plugin validate`.
-- GitHub repo `ndany/plotpoint` exists (public, placeholder README, Verified).
+- GitHub repo `ndany/plotpoint` (public): baseline commit Verified, Checks
+  workflow green, About description and topics set.
 
 ## Next steps
 
-0. **Hands-on validation** (`docs/guide/try-it.md`): run the engine and the
-   skill on the fixture; fix or backlog what you find.
-1. **Signed first commit from the local machine**
-   (`docs/plans/FIRST-COMMIT-GUIDE.md`, with the message in
-   `docs/plans/COMMIT_MSG.txt`; both gitignored, delete them after the commit,
-   as the guide's step B8 says): copy the files in, `scripts/check-all.sh`, commit,
-   push, confirm Verified. Then set the GitHub About description identical to
-   the README tagline, and the topics.
+0. **Hands-on validation** (`docs/guide/try-it.md`): done 2026-11-14. Next:
+   triage the findings into fixes or this Backlog.
+1. **Signed first commit from the local machine**: done 2026-11-14 (Verified,
+   CI green; About description and topics set).
 2. **Viewer check:** open `docs/examples/library-review/README.md` in VS Code
    (with the Markdown Preview Mermaid Support extension) and on GitHub; confirm
    the Mermaid chart, SVGs and source lines render.
