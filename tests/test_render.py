@@ -303,6 +303,9 @@ def test_scatter_point_callout_by_label_alone(workdir: Path) -> None:
         workdir,
     )
     assert res["checks"]["callouts"]["status"] == "pass"
+    # The check confirms the match, not the drawing (HANDOFF backlog), so it
+    # doesn't claim the callout was placed.
+    assert res["checks"]["callouts"]["detail"] == "1 callout(s) matched to the data"
     svg = (workdir / "figures/s1/s1-html-document.svg").read_text()
     assert svg.count(">Busiest<") == 1
 

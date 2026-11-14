@@ -1,4 +1,5 @@
-# On purpose, every check fails. Render it, read the checks, then fix one at a time.
+# On purpose, three checks fail (legibility, capacity and render pass). Render it,
+# read the checks, then fix one at a time.
 #  - headline_numbers: 22% isn't a change in the data (the fall was 18%), and
 #    "Central" didn't wait 48 minutes (Riverside did)
 #  - outliers: the scatter has flagged outliers but no handling

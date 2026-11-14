@@ -42,6 +42,8 @@ All data is invented. Open these in VS Code:
 | --- | --- |
 | `storyboard-request.yaml` | The write-up's brief: two audiences, four questions (some with the caller's takeaway), seven datasets |
 | `data/` | The datasets, deliberately in every supported form: `.csv`, `.tsv`, `.json`, `.jsonl`, plus one inline in the request |
+| `data/derived/` | A table built from two datasets (print and e-book loans joined on quarter), as the storyboard's merge recommendation asks the caller to do |
+| `render-data.yaml` | Which data file each storyboard visual renders from; the tests and `scripts/build_examples.py` use it to render the reference plan |
 | `drafts/review.md` | A draft write-up with weak visuals (two bar charts for one story, a 48-bar chart) |
 | `storyboard-request-with-draft.yaml` | The same brief plus the draft (mode A) |
 | `storyboard-golden.yaml` | The reference answer: what a good storyboard recommends |
@@ -77,6 +79,9 @@ always include the extremes. This is what Claude reads instead of raw rows.
 ```bash
 $VIZ render --checks-only requests/v1-line.yaml
 ```
+
+`--checks-only` still writes every file; it only shortens what's printed. To
+run the checks without writing anything, use `--dry-run`.
 
 Then look at `requests/out/v1/`:
 

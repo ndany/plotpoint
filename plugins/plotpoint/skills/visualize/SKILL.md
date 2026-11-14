@@ -67,7 +67,7 @@ Specs and field meanings: `references/spec.md`. Validate anything you write:
      state what the data shows and mark it `draft`. A reference table with no
      single takeaway gets a descriptive `title`.
    - **Fields:** which columns play which role; display `names` for columns;
-     `bins` for a histogram (default 20; `names: {count: ...}` titles its
+     `bins` for a histogram (a maximum, default 20; `names: {count: ...}` titles its
      y axis).
    - **Highlight:** the series or categories the headline is about. Everything
      else turns context gray.
@@ -88,7 +88,7 @@ Specs and field meanings: `references/spec.md`. Validate anything you write:
    `outliers`, `callouts`, `legibility`, `render`) and re-render; report
    `warn`s. Read what each headline number matched: a pass on the wrong row,
    period or statistic is still wrong, so confirm each match is the one your
-   sentence means. `render --checks-only` prints just the checks.
+   sentence means. `render --checks-only` writes the files but prints just the checks.
 5. **Look at the output** before delivering: open the PNG or SVG, or
    screenshot the HTML fragment (an SVG converts to PNG with
    `vl_convert.svg_to_png`, or opens in a browser); for text, tables and

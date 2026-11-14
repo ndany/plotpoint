@@ -171,7 +171,7 @@ Tables are exempt: they show every value.
 | `stacked_bar` | `x`, `y` as a list of segment columns, or `y` + `series` for long data; optional `normalize` |
 | `line` | `x` (time or ordered category), `y` as a list of measures, or `y` + `series` |
 | `scatter` | `x`, `y` measures; optional `label` (point names, used by highlight and callouts), `series` |
-| `histogram` | `value` measure; optional `bins` (default 20); `names: {count: Visits}` titles the y axis |
+| `histogram` | `value` measure; optional `bins`: the most bins to use (default 20); Vega-Lite picks a round bin width within it, so you may get fewer (20 can give ten 5-minute bins); `names: {count: Visits}` titles the y axis |
 | `table` | optional `columns` order, `sort` (`value`: descending by the first numeric column in `columns`, or by `y` if set; `label`: by the first column; `data`: as given), `names` |
 | `number` | `value`; optional `label` (column holding the label shown under the figure; `names` doesn't rename it), `previous` (for the change) |
 | `sentence` | None: the headline is the visual. `data` is still required so its numbers are checked |
@@ -198,9 +198,14 @@ The renderer needs an intent. In mode C, validate the request once, decide the
 intent (SKILL.md render step 2), add it, and render; `question` and `takeaway`
 may stay in the request.
 
+A render request has no `data_note` (validation rejects it). When `data` is a
+table you built, record how in a YAML comment above `data`, or keep the
+storyboard's `data_note` with your write-up.
+
 Add `--dry-run` (`visualize.py render --dry-run request.yaml`) to run every
 check without writing files; text outputs (tables, numbers, sentences) are
-still returned. For a whole storyboard, `visualize.py check-plan request.yaml
+still returned. `--checks-only` is different: it renders and writes every file,
+and prints only the checks and notes. For a whole storyboard, `visualize.py check-plan request.yaml
 result.yaml` builds a request per visual (its `data`, else its first dataset;
 sources joined; latest as-of) and dry-runs them all.
 

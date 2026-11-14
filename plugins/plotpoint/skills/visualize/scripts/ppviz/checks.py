@@ -459,7 +459,7 @@ def callouts(intent: dict[str, Any], shaped: Shaped) -> tuple[str, str]:
     if problems:
         return "fail", "; ".join(problems) + ". Unpinned callouts are not drawn."
     n = len(intent.get("callouts") or [])
-    return "pass", f"{n} callout(s) placed" if n else "no callouts"
+    return "pass", f"{n} callout(s) matched to the data" if n else "no callouts"
 
 
 def outliers(
