@@ -152,7 +152,9 @@ enforced by `scripts/check_frontmatter.py`.
 **Cost:** no review or CI gate before changes land; mitigated by the pre-commit
 hook and `scripts/check-all.sh`.
 **Revisit:** stable v1, a second contributor, or regular outside use (the repo
-is public from the start, by choice) (`HANDOFF.md` backlog).
+is public from the start, by choice) (`HANDOFF.md` backlog). Planned
+(2026-11-14): require PRs and turn on branch protection for `main`; D-24 ends
+then.
 
 ## D-18: Signed commits from a local machine
 
@@ -162,7 +164,7 @@ maintainer's machine, from the first content commit.
 a cloud session (rejected).
 The first commit's instructions and message ship in `docs/plans/`
 (`FIRST-COMMIT-GUIDE.md`, `COMMIT_MSG.txt`), gitignored so they stay out of
-history, and are deleted after that commit.
+history; they were deleted after that commit (2026-11-14).
 **Revisit:** if commits are made from cloud sessions.
 
 ## D-19: Model-behavior tests are recorded runs by an independent agent
@@ -215,3 +217,30 @@ tester got "fell 22%", "fell 3%" for a rise and "half within 12" past it).
 lives in `config/capacity.yaml`.
 **Limit:** it still can't tell whether the sentence compares the right things, or
 whether the number is visible; the "look at it" step covers both.
+
+## D-24: Dependency updates are applied locally, not merged on GitHub
+
+**Chosen:** Dependabot's PRs aren't merged on GitHub. Their version bumps are
+applied in a signed local commit on `main` (D-17, D-18), and the PRs close as
+obsolete (or by hand).
+**Alternatives:** merge on the web (GitHub signs that commit, not the
+maintainer's key, against D-18); require PRs now (D-17's revisit).
+**Cost:** one manual commit per weekly update group; the PRs show closed, not
+merged.
+**Revisit:** when PRs and branch protection on `main` become required (D-17);
+Dependabot's PRs then merge like any other.
+
+## D-25: Markdown figures are linked SVG files beside the document
+
+**Chosen:** Markdown output links SVG files, by default in `figures/<doc-name>/`
+next to the document, and the guide and `spec.md` explain it.
+**Alternatives:** inline `<svg>` in the Markdown (GitHub strips it; about 10 KB
+of markup per chart); SVG as a base64 `data:` URI (GitHub blocks it; about
+13 KB of unreadable text per chart; only helps single-file documents read
+locally); Mermaid only (exists as a technique, with fewer chart types). A plain
+`figures/` folder was rejected because two documents in one folder can both
+have a `v1`.
+**Rationale:** linked SVG files work on GitHub and in local editors; the
+per-document folder never collides and keeps each document's images together.
+**Status:** decided 2026-11-14, not built yet (`HANDOFF.md` backlog, "Markdown
+figures beside the document", after C12 writes the `.md` file).

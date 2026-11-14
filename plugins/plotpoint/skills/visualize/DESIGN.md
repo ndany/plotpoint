@@ -103,3 +103,20 @@ Open, in the backlog: no control over label placement (T3 r3's label sits on a
 gridline); bin edges aren't derivable numbers; nothing checks that a headline
 number is *visible* (T2b); a `preview` command that shows the chart with its
 headline and source (T3c); Mermaid legends need 11.17.
+
+### 2026-11-14: maintainer's hands-on tour
+
+The maintainer ran `docs/guide/try-it.md` end to end, with fresh sessions for
+modes B, A, C and D and one own question (the answer key moved out of the
+sandbox). Mode B met E1–E11; mode A met 10 of 11. All sessions looked at their
+renders, and those looks caught what the checks missed: a clipped label, a
+folded "Other" bar that outranked the highlight, suffixed numbers ("212k")
+that the headline check skipped, and point callouts on bars that weren't drawn.
+Two of two storyboard runs edited the caller's takeaway and kept it
+`confirmed`. Findings are in `HANDOFF.md`: critical fixes in next step 2, the
+rest in the Backlog.
+
+Observed, no change: the q3 detail scatter went in the board summary in mode A
+(the E8 miss) but in the body, under a board summary sentence, in mode B. This
+is run-to-run variance on a judgment call; compare it with future recorded
+runs before acting.
