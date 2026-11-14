@@ -1,0 +1,12 @@
+{
+  "name": "plotpoint-dev",
+  "private": true,
+  "description": "Dev tooling for the plotpoint skills repo (markdown linting only)",
+  "license": "Apache-2.0",
+  "scripts": {
+    "lint:md": "markdownlint-cli2"
+  },
+  "devDependencies": {
+    "markdownlint-cli2": "0.24.0"
+  }
+}

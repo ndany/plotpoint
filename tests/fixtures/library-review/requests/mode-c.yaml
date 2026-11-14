@@ -1,0 +1,10 @@
+# Mode C: a question and data, no intent. Ask Claude to render it; Claude decides
+# the visual type, headline, emphasis and outlier handling, then renders.
+# The script alone refuses it ("render needs an intent").
+id: c1
+question: "How long do visitors wait for help?"
+data: {path: ../data/wait_minutes.csv}
+source: "Branch visit survey, individual visits"
+as_of: 2026-09-30
+targets: [md/document, html/document]
+out_dir: out/c1

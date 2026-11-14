@@ -1,0 +1,42 @@
+# Capacity limits per visual type. Initial values, to be tuned by render tests.
+# document limits apply at content_width 960 and scale with width;
+# slide limits are fixed. See references/targets.md.
+#
+# over: what happens past the limit
+#   top_n_other  keep the largest N-1, sum the rest into "Other"
+#   emphasize    keep all, gray everything not highlighted, label only highlights
+#   warn         render as-is and report
+
+reference_width: 960
+
+bar:
+  measure: categories
+  document: 12
+  slide: 7
+  over: top_n_other
+stacked_bar:
+  measure: segments
+  document: 5
+  slide: 4
+  over: top_n_other
+line:
+  measure: series
+  document: 7
+  slide: 3
+  over: emphasize
+  direct_label_max: 4
+scatter:
+  measure: points
+  document: 2000
+  slide: 500
+  over: warn
+mermaid_xychart:
+  measure: categories
+  document: 10
+  over: warn
+
+# Headline-number check: above this many rows, individual values no longer count
+# as derivable (only each measure's min and max, totals and summary statistics),
+# because almost any number would match one of hundreds of raw values.
+headline_check:
+  raw_values_max_rows: 50

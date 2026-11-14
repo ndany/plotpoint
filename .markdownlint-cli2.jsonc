@@ -1,0 +1,23 @@
+// markdownlint configuration. Rule reference:
+// https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
+{
+  "config": {
+    "default": true,
+    // Line length: tables and URLs make hard wraps impractical; prose is wrapped
+    // by convention, not enforcement.
+    "MD013": false,
+    // Allow the same heading text under different parents (e.g. "Rationale").
+    "MD024": { "siblings_only": true },
+    // Tables: one consistent style, spaces inside pipes ("| a | b |").
+    "MD060": { "style": "compact" }
+  },
+  "globs": ["**/*.md"],
+  // Generated output and recorded model runs are kept verbatim, not hand-edited.
+  "ignores": [
+    "node_modules/**",
+    ".venv/**",
+    "dist/**",
+    "docs/examples/**/README.md",
+    "tests/fixtures/*/runs/**"
+  ]
+}

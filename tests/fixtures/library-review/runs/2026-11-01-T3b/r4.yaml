@@ -1,0 +1,19 @@
+id: r4
+question: How do the branches compare on visits, opening hours, staffing and events?
+data:
+  path: data/branch_overview.json
+source: Branch operations report
+as_of: '2026-09-30'
+targets:
+- md/document
+- html/document
+out_dir: figures/r4
+intent:
+  visual_type: table
+  rationale: "Four measures across twelve branches with no single takeaway: a reference table, sorted by visits."
+  headline: "Branch operations: visits, opening hours, staffing and events, FY26"
+  headline_status: title
+  fields:
+    columns: [branch, visits_k, open_hours, staff_fte, events]
+    sort: value
+    names: {branch: Branch, visits_k: Visits (thousands), open_hours: Open hours per week, staff_fte: Staff (FTE), events: Events}

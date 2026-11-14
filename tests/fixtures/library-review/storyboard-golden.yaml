@@ -1,0 +1,105 @@
+# The maintainer-reviewed reference storyboard for the fixture (invented data).
+# Used as the input for render tests (T4) and as the yardstick for judging
+# storyboard runs (T1, T2) alongside expected.md.
+visuals:
+  - id: v1
+    questions: [q1]
+    datasets: [loans_print, loans_ebook]
+    audience: [board, managers]
+    placement: summary
+    data: {path: data/derived/loans_by_quarter.csv}
+    data_note: "Join print and e-book loans on quarter (columns quarter, print, ebook)"
+    intent:
+      visual_type: line
+      rationale: "Change over time; two series, but the story is about e-book loans recovering"
+      headline: "Total loans fell 18% during the Q2 renovation; e-book loans have since grown to a new high"
+      headline_status: confirmed
+      fields: {x: quarter, y: [print, ebook], names: {print: Print, ebook: E-book}}
+      highlight: [ebook]
+      callouts:
+        - {kind: rule, x: "Q2 '26", text: "Q2 renovation\nTotal 1,230 → 1,008 (−18%)"}
+      outlier_handling: {method: none_flagged}
+      units: Loans (thousands)
+    renderings:
+      md/document: {technique: mermaid, compensations: ["callout as text under the chart", "series named in text (legend needs Mermaid 11.17+)"]}
+      html/document: {technique: svg}
+  - id: v2
+    questions: [q2]
+    datasets: [members]
+    audience: [board]
+    placement: summary
+    intent:
+      visual_type: number
+      rationale: "A single headline figure; a chart would add nothing"
+      headline: "The library has 48,210 active members, up 3.2%"
+      headline_status: draft
+      fields: {value: value, label: metric, previous: previous}
+      outlier_handling: {method: none_flagged}
+    renderings:
+      md/document: {technique: text}
+      html/document: {technique: text}
+  - id: v3
+    questions: [q3]
+    datasets: [branch_waits]
+    audience: [managers]
+    placement: body
+    intent:
+      visual_type: scatter
+      rationale: "Do two measures move together: staffing against waiting time, one point per branch"
+      headline: "Riverside's average wait is 48 minutes, far above every other branch"
+      headline_status: confirmed
+      fields: {x: staff_fte, y: avg_wait_min, label: branch, names: {staff_fte: Staff (FTE), avg_wait_min: Average wait (minutes)}}
+      highlight: [Riverside]
+      callouts:
+        - {kind: note, text: "Central is the largest branch (24 FTE); its short wait is expected for its size"}
+      outlier_handling:
+        - {column: avg_wait_min, method: callout, reason: "Riverside's wait is the finding"}
+        - {column: staff_fte, method: accept, reason: "Central's staffing is real; explained in a note"}
+    renderings:
+      md/document: {technique: svg, compensations: ["Mermaid has no scatter chart"]}
+      html/document: {technique: svg}
+  - id: v4
+    questions: [q3]
+    datasets: [branch_overview]
+    audience: [managers]
+    placement: appendix
+    intent:
+      visual_type: table
+      rationale: "Four measures across twelve branches with no single story: reference detail"
+      headline: "Branch operations at a glance: Central carries the most activity"
+      headline_status: draft
+      fields:
+        columns: [branch, visits_k, open_hours, staff_fte, events]
+        names: {branch: Branch, visits_k: Visits (k), open_hours: Open hours, staff_fte: Staff (FTE), events: Events}
+      highlight: [Riverside]
+      outlier_handling: {method: accept, reason: "A reference table shows every value as-is"}
+    renderings:
+      md/document: {technique: table}
+      html/document: {technique: table}
+  - id: v5
+    questions: [q4]
+    datasets: [wait_minutes]
+    audience: [managers]
+    placement: body
+    intent:
+      visual_type: histogram
+      rationale: "How values are spread: the long tail of waits matters more than the average"
+      headline: "Half of visitors wait under 8 minutes, but one in ten waits more than 19"
+      headline_status: draft
+      fields: {value: wait_min, bins: 24, names: {wait_min: Wait (minutes)}}
+      callouts:
+        - {kind: rule, x: 7.8, text: "Median 7.8 min"}
+        - {kind: rule, x: 18.9, text: "1 in 10 wait > 18.9 min"}
+      outlier_handling: {method: accept, reason: "The tail is the point of a distribution chart"}
+      units: Wait (minutes)
+    renderings:
+      md/document: {technique: svg, compensations: ["Mermaid has no histogram"]}
+      html/document: {technique: svg}
+recommendations:
+  - {kind: order, detail: "Open with v1 and v2 in the summary: they answer the board's questions directly", affects: [v1, v2]}
+  - {kind: merge, detail: "Print and e-book loans tell one story; show them on one chart instead of two bar charts", affects: [v1]}
+  - {kind: demote, detail: "The 48-bar grouped chart has no single takeaway; use a reference table in the appendix", affects: [v4]}
+  - {kind: cut, detail: "Café revenue doesn't answer how many people use the library; drop it from this write-up", affects: [cafe_sales]}
+  - {kind: placement, detail: "Branch staffing and wait distribution are manager detail: body, after the summary", affects: [v3, v5]}
+  - {kind: rendering, detail: "v1 is Mermaid in Markdown (text-only) but SVG in HTML, where the renovation callout can be drawn on the chart", affects: [v1]}
+color_map: {E-book: accent, Print: context}

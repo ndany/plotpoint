@@ -1,0 +1,8 @@
+# Which data file each storyboard visual renders from (what the caller passes as
+# `data` in the render request). v1 uses the caller's merge of the two loans
+# datasets, as the storyboard's merge recommendation asks.
+v1: {path: data/derived/loans_by_quarter.csv}
+v2: {inline: "metric,value,previous\nActive members,48210,46700\n"}
+v3: {path: data/branch_waits.jsonl}
+v4: {path: data/branch_overview.json}
+v5: {path: data/wait_minutes.csv}

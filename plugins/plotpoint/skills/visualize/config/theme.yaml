@@ -1,0 +1,62 @@
+# plotpoint theme. Palette validated with the dataviz skill's validate_palette.py
+# (light mode, white surface): all checks pass; slot4 (amber) is below 3:1 contrast,
+# which is allowed because plotpoint always labels series or shows a legend.
+
+font: "system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"
+
+ink:
+  primary: "#1c1c1a"
+  secondary: "#55544f"
+  muted: "#7a7973"
+  grid: "#e4e3dd"
+  axis: "#c9c8c1"
+  surface: "#ffffff"
+
+accent: "#1f6fd1"     # the story's subject
+context: "#a3a29c"    # everything else; recedes
+
+palette:              # categorical slots, fixed order, never cycled
+  - "#1f6fd1"
+  - "#e0602b"
+  - "#14a37f"
+  - "#d99a0b"
+  - "#d6559a"
+  - "#3d8f2e"
+  - "#7a5cd6"
+  - "#d93f4b"
+
+# Type and mark sizes in CSS px, before legibility raising (layouts.yaml).
+scale:
+  document:
+    label: 12
+    axis_title: 12
+    direct_label: 13
+    callout: 12
+    headline: 22
+    source: 11
+    line_width: 2
+    point_size: 64       # Vega-Lite area units (px^2)
+    rule_width: 1
+  slide:
+    label: 22
+    axis_title: 22
+    direct_label: 26
+    callout: 24
+    headline: 52
+    source: 20
+    line_width: 4
+    point_size: 256
+    rule_width: 2
+
+# Plain-language color names, used when text must say which line is which
+# (e.g. under a Mermaid chart, whose legend needs Mermaid 11.17+).
+color_names:
+  "#1f6fd1": blue
+  "#a3a29c": gray
+  "#e0602b": orange
+  "#14a37f": teal
+  "#d99a0b": amber
+  "#d6559a": pink
+  "#3d8f2e": green
+  "#7a5cd6": violet
+  "#d93f4b": red

@@ -1,0 +1,21 @@
+id: r2
+question: How many people actively use the library?
+data:
+  inline: 'metric,value,previous
+
+    Active members,48210,46700
+
+    '
+source: Membership system
+as_of: '2026-09-30'
+targets:
+- md/document
+- html/document
+out_dir: figures/r2
+intent:
+  visual_type: number
+  rationale: "The question asks for a single count; one value with its previous figure is a stat tile, not a chart."
+  headline: "48,210 people actively use the library, up 3.2% on the previous count"
+  headline_status: draft
+  fields: {value: value, label: metric, previous: previous, names: {value: Active members}}
+  outlier_handling: {method: none_flagged}

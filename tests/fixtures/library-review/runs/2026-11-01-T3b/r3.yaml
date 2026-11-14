@@ -1,0 +1,23 @@
+id: r3
+question: Which branches need more staff?
+takeaway: Riverside's average wait is far above every other branch at similar staffing
+data:
+  path: data/branch_waits.jsonl
+source: Branch visit survey
+as_of: '2026-09-30'
+targets:
+- md/document
+- html/document
+out_dir: figures/r3
+intent:
+  visual_type: scatter
+  rationale: "Staffing need is a relationship between two measures (staff vs wait); a scatter shows Riverside's wait against branches with the same FTE. A sorted bar of wait alone would hide the staffing comparison."
+  headline: "Riverside's average wait is far above every other branch at similar staffing"
+  headline_status: confirmed
+  fields: {x: staff_fte, y: avg_wait_min, label: branch, names: {staff_fte: Staff (FTE), avg_wait_min: Average wait (minutes)}}
+  highlight: [Riverside]
+  callouts:
+    - {kind: point, series: Eastgate, text: "Eastgate: same 4.5 FTE, 15 min"}
+  outlier_handling:
+    - {column: avg_wait_min, method: callout, reason: "Riverside's 48-minute wait is the finding; highlighted"}
+    - {column: staff_fte, method: accept, reason: "Central's 24 FTE is real (largest branch); it widens the x axis but the cluster stays readable"}

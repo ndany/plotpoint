@@ -1,0 +1,18 @@
+id: r4
+question: "How do the branches compare on visits, opening hours, staffing and events?"
+data: {path: data/branch_overview.json}
+source: "Branch operations report"
+as_of: 2026-09-30
+targets: [md/document, html/document]
+out_dir: figures/r4
+intent:
+  visual_type: table
+  rationale: "Four measures in different units across 12 branches: one y-axis can't carry them, and the reader wants to look up each branch; a table gives exact values"
+  headline: "Central leads on every measure, with 212k visits, 68 opening hours, 24 staff FTE and 96 events"
+  headline_status: draft
+  fields:
+    columns: [branch, visits_k, open_hours, staff_fte, events]
+    sort: data
+    names: {branch: Branch, visits_k: "Visits (k)", open_hours: "Opening hours / week", staff_fte: "Staff (FTE)", events: Events}
+  highlight: [Central]
+  outlier_handling: {method: accept, reason: "Central is the large main branch; its values are real and a table shows them without distorting any axis"}

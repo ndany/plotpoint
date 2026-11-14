@@ -1,0 +1,23 @@
+# Mode D: a scatter where one outlier is the story and another is real context.
+id: v3
+intent:
+  visual_type: scatter
+  headline: "Riverside's average wait is 48 minutes, far above every other branch"
+  headline_status: confirmed
+  fields:
+    x: staff_fte
+    y: avg_wait_min
+    label: branch
+    names: {staff_fte: Staff (FTE), avg_wait_min: Average wait (minutes)}
+  highlight: [Riverside]
+  callouts:
+    - {kind: note, text: "Central is the largest branch (24 FTE); its short wait is expected for its size"}
+  outlier_handling:
+    - {column: avg_wait_min, method: callout, reason: "Riverside's wait is the finding"}
+    - {column: staff_fte, method: accept, reason: "Central's staffing is real; explained in a note"}
+data: {path: ../data/branch_waits.jsonl}
+source: "Branch visit survey"
+as_of: 2026-09-30
+targets: [md/document, html/document]
+layout: {html/document: {preset: prose}}   # 800 wide; try {content_width: 600}
+out_dir: out/v3

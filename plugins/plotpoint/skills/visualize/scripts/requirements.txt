@@ -1,0 +1,5 @@
+# Runtime dependencies for scripts/visualize.py (Python 3.11+).
+# Install: pip install -r requirements.txt
+jsonschema>=4.21,<5
+PyYAML>=6.0,<7
+vl-convert-python>=1.9,<2

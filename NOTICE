@@ -1,0 +1,32 @@
+plotpoint
+Copyright 2026 ndany (https://github.com/ndany)
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This product draws on published ideas and guidance from the works listed below.
+No text, code or data from these works is included unless noted. The authors of
+these works are not affiliated with this project and do not endorse it.
+
+- From Data to Viz, by Yan Holtz and Conor Healy (https://www.data-to-viz.com/)
+- Dataviz Inspiration, by Yan Holtz (https://www.dataviz-inspiration.com/)
+- ColorBrewer 2.0, by Cynthia Brewer, Mark Harrower and The Pennsylvania State
+  University (https://colorbrewer2.org/). Scheme names are referenced; no color
+  specifications are included.
+- Dashboard Design Patterns, by Benjamin Bach et al., IEEE VIS / TVCG 2023
+  (https://dashboarddesignpatterns.github.io/)
+- Storytelling with Data, by Cole Nussbaumer Knaflic (Wiley, 2015)
+  (https://www.storytellingwithdata.com/)
+- Visual Vocabulary, by the Financial Times
+- Information Dashboard Design, by Stephen Few
+- Okabe-Ito color palette, by Masataka Okabe and Kei Ito. The seven palette
+  values are listed in plugins/plotpoint/skills/visualize/references/
+  fallback-rendering.md.
+- Vega-Lite (https://vega.github.io/vega-lite/) and vl-convert
+  (https://github.com/vega/vl-convert), by the Vega project contributors,
+  BSD-3-Clause. Used as a runtime dependency (vl-convert-python), not
+  included in this repository.
+- The dataviz skill, by Anthropic. plotpoint applies its rendering method;
+  no text or code from it is included. plotpoint's palette is its own,
+  checked with that skill's palette validator.
+
+See ACKNOWLEDGMENTS.md for details.

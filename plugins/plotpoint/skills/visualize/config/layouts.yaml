@@ -1,0 +1,63 @@
+# Layout presets and target defaults. See references/targets.md.
+#
+# content_width:     the width a chart is drawn at, in CSS px (container minus padding).
+# min_display_width: the narrowest width the chart is expected to be shown at.
+#                    Font sizes are raised so labels stay >= legibility.min_label_px there.
+# height_ratio:      default chart height = content_width x height_ratio.
+# kind:              document | slide  (selects the type scale in theme.yaml)
+
+legibility:
+  min_label_px: 11
+
+presets:
+  prose:
+    content_width: 800
+    min_display_width: 600
+    height_ratio: 0.5
+    kind: document
+  report:
+    content_width: 960
+    min_display_width: 768
+    height_ratio: 0.45
+    kind: document
+  wide:
+    content_width: 1100
+    min_display_width: 768
+    height_ratio: 0.45
+    kind: document
+  dashboard:
+    content_width: 1200
+    columns: 3
+    gap: 24
+    min_display_width: 1024
+    height_ratio: 0.7
+    kind: document
+  deck:
+    canvas: [1440, 810]
+    chart_box: [1320, 560]
+    min_display_width: 1280
+    kind: slide
+  slide-image:
+    canvas: [1920, 1080]
+    chart_box: [1760, 720]
+    min_display_width: 1280
+    kind: slide
+    png_scale: 2
+
+targets:
+  md/document:
+    preset: report
+    techniques: [svg, mermaid, table, text]
+    default_technique: svg
+  html/document:
+    preset: report
+    techniques: [svg, vega, table, text]
+    default_technique: svg
+  html/slide:
+    preset: deck
+    techniques: [svg, vega, table, text]
+    default_technique: svg
+  image/slide:
+    preset: slide-image
+    techniques: [png]
+    default_technique: png

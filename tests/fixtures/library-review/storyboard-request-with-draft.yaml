@@ -1,0 +1,64 @@
+# Test fixture (invented data): a write-up with four questions, two audiences and
+# seven datasets in mixed forms. Mode A: the same request plus the draft write-up.
+writeup:
+  title: "City library services review, FY26"
+  audiences:
+    board: "Library board: decision-makers, non-specialists; read the summary first"
+    managers: "Branch managers: practitioners who act on detail"
+  default_audience: board
+  targets: [md/document, html/document]
+  layout: {preset: report}
+  draft: {path: drafts/review.md}
+questions:
+  - id: q1
+    question: "Did the Q2 renovation reduce library use?"
+    audience: [board, managers]
+    takeaway: "Total loans fell 18% during the renovation; e-book loans have since recovered and grown"
+    datasets: [loans_print, loans_ebook]
+  - id: q2
+    question: "How many people actively use the library?"
+    audience: [board]
+    datasets: [members, cafe_sales]
+  - id: q3
+    question: "Which branches need more staff?"
+    audience: [managers]
+    takeaway: "Riverside's average wait is far above every other branch at similar staffing"
+    datasets: [branch_waits, branch_overview]
+  - id: q4
+    question: "How long do visitors wait for help?"
+    audience: [managers]
+    datasets: [wait_minutes]
+datasets:
+  - id: loans_print
+    data: {path: data/loans_print.csv}
+    source: "Library circulation system export"
+    as_of: 2026-09-30
+    units: loans (thousands)
+  - id: loans_ebook
+    data: {path: data/loans_ebook.tsv}
+    source: "E-lending platform export"
+    as_of: 2026-09-30
+    units: loans (thousands)
+  - id: members
+    data: {inline: "metric,value,previous\nActive members,48210,46700\n"}
+    source: "Membership system"
+    as_of: 2026-09-30
+  - id: cafe_sales
+    data: {path: data/cafe_sales.csv}
+    source: "Café point-of-sale system"
+    as_of: 2026-09-30
+    units: dollars
+  - id: branch_waits
+    data: {path: data/branch_waits.jsonl}
+    source: "Branch visit survey"
+    as_of: 2026-09-30
+    units: minutes
+  - id: branch_overview
+    data: {path: data/branch_overview.json}
+    source: "Branch operations report"
+    as_of: 2026-09-30
+  - id: wait_minutes
+    data: {path: data/wait_minutes.csv}
+    source: "Branch visit survey, individual visits"
+    as_of: 2026-09-30
+    units: minutes

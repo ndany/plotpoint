@@ -1,0 +1,21 @@
+id: r5
+question: How long do visitors wait for help?
+data:
+  path: data/wait_minutes.csv
+source: Branch visit survey, individual visits
+as_of: '2026-09-30'
+targets:
+- md/document
+- html/document
+out_dir: figures/r5
+intent:
+  visual_type: histogram
+  rationale: "How values spread out across 300 individual visits: a histogram. Median and upper quartile are marked so the headline numbers are visible."
+  headline: "Half of visitors are helped within 7.8 minutes, but a quarter wait longer than 13 minutes"
+  headline_status: draft
+  fields: {value: wait_min, names: {wait_min: Wait (minutes)}}
+  callouts:
+    - {kind: rule, x: 7.8, text: "Median\n7.8 min"}
+    - {kind: rule, x: 13, text: "Upper quartile\n13 min"}
+  outlier_handling: {method: accept, reason: "Long waits up to 47.5 min are real visits; the right tail is part of the distribution"}
+  units: Wait (minutes)

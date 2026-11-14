@@ -1,0 +1,7 @@
+# Pinned so lint and test behavior can't drift between local and CI.
+jsonschema==4.26.0
+pytest==9.1.1
+PyYAML==6.0.3
+ruff==0.17.2
+shellcheck-py==0.11.0.1
+vl-convert-python==1.9.0.post1

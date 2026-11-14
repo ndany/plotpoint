@@ -1,0 +1,86 @@
+[
+ {
+  "branch": "Central",
+  "visits_k": 212,
+  "open_hours": 68,
+  "staff_fte": 24,
+  "events": 96
+ },
+ {
+  "branch": "Riverside",
+  "visits_k": 96,
+  "open_hours": 54,
+  "staff_fte": 4.5,
+  "events": 22
+ },
+ {
+  "branch": "Northgate",
+  "visits_k": 88,
+  "open_hours": 52,
+  "staff_fte": 9,
+  "events": 30
+ },
+ {
+  "branch": "Elm Park",
+  "visits_k": 74,
+  "open_hours": 48,
+  "staff_fte": 8,
+  "events": 28
+ },
+ {
+  "branch": "Harbor",
+  "visits_k": 69,
+  "open_hours": 48,
+  "staff_fte": 7.5,
+  "events": 25
+ },
+ {
+  "branch": "Westfield",
+  "visits_k": 65,
+  "open_hours": 46,
+  "staff_fte": 7,
+  "events": 21
+ },
+ {
+  "branch": "Oakdale",
+  "visits_k": 61,
+  "open_hours": 46,
+  "staff_fte": 6.5,
+  "events": 19
+ },
+ {
+  "branch": "Southbank",
+  "visits_k": 58,
+  "open_hours": 44,
+  "staff_fte": 6.5,
+  "events": 18
+ },
+ {
+  "branch": "Hillcrest",
+  "visits_k": 52,
+  "open_hours": 42,
+  "staff_fte": 6,
+  "events": 16
+ },
+ {
+  "branch": "Lakeside",
+  "visits_k": 47,
+  "open_hours": 40,
+  "staff_fte": 5.5,
+  "events": 15
+ },
+ {
+  "branch": "Mill Road",
+  "visits_k": 41,
+  "open_hours": 38,
+  "staff_fte": 5,
+  "events": 12
+ },
+ {
+  "branch": "Eastgate",
+  "visits_k": 38,
+  "open_hours": 36,
+  "staff_fte": 4.5,
+  "events": 11
+ }
+]

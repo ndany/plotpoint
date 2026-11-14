@@ -1,0 +1,221 @@
+# Storyboard result for "City library services review, FY26" (mode A: with draft).
+# Visuals are in recommended reading order.
+visuals:
+  - id: v1
+    questions: [q1]
+    datasets: [loans_print, loans_ebook]
+    audience: [board, managers]
+    placement: summary
+    intent:
+      visual_type: line
+      rationale: >-
+        Change over time across five quarters; two series on the same quarters and
+        units, so one line chart replaces the draft's two separate bar charts. The
+        story is the e-book line (accent); print is context. Total loans are not
+        plotted, so the 18% fall is carried by a rule callout at Q2 '26.
+      headline: "Total loans fell 18% during the renovation; e-book loans have since recovered and grown"
+      headline_status: confirmed
+      fields:
+        x: quarter
+        y: [print, ebook]
+        names: {print: Print, ebook: E-book}
+      highlight: [ebook]
+      callouts:
+        - {kind: rule, x: "Q2 '26", text: "Q2 renovation\nTotal 1,230 → 1,008 (−18%)"}
+        - {kind: point, x: "Q3 '26", series: E-book, text: "E-book 445, a new high"}
+      outlier_handling: {method: none_flagged}
+      units: Loans (thousands)
+    renderings:
+      md/document:
+        technique: svg
+        compensations:
+          - "The callouts carry the headline's 18% figure, so SVG rather than Mermaid (Mermaid would drop them to text under the chart)"
+      html/document: {technique: svg}
+  - id: v2
+    questions: [q2]
+    datasets: [members]
+    audience: [board]
+    placement: summary
+    intent:
+      visual_type: number
+      rationale: >-
+        "How many" is answered by one number; a stat tile with the change from the
+        previous figure. A chart would add nothing.
+      headline: "Active members rose 3.2% to 48,210"
+      headline_status: draft
+      fields:
+        value: value
+        label: metric
+        previous: previous
+        names: {value: Active members, previous: Previous}
+      outlier_handling: {method: none_flagged}
+    renderings:
+      md/document:
+        technique: text
+        compensations: ["No sparkline or tile styling; value and change are stated in text"]
+      html/document: {technique: text}
+  - id: v3
+    questions: [q3]
+    datasets: [branch_waits]
+    audience: [managers]
+    placement: body
+    intent:
+      visual_type: scatter
+      rationale: >-
+        "Which branches need more staff" asks whether wait moves with staffing:
+        correlation, so a scatter of staff FTE against average wait, one labeled
+        point per branch. Riverside is highlighted; Eastgate (same 4.5 FTE) is
+        called out as the like-for-like comparison. Central's 24 FTE is a real
+        flagship value and stretches the x-axis; it is drawn as-is.
+      headline: "Riverside's average wait is far above every other branch at similar staffing"
+      headline_status: confirmed
+      fields:
+        x: staff_fte
+        y: avg_wait_min
+        label: branch
+        names: {staff_fte: Staff (FTE), avg_wait_min: Average wait (minutes), branch: Branch}
+      highlight: [Riverside]
+      callouts:
+        - {kind: point, x: 4.5, series: Riverside, text: "Riverside: 48 min at 4.5 FTE"}
+        - {kind: point, x: 4.5, series: Eastgate, text: "Eastgate: 15 min at 4.5 FTE"}
+        - {kind: note, text: "Central (24 FTE, 6 min) is the flagship branch, drawn to scale"}
+      outlier_handling:
+        method: callout
+        reason: "Riverside's 48-minute wait is the story (highlighted and called out); Central's 24 FTE is real and noted"
+      units: Average wait (minutes)
+    renderings:
+      md/document:
+        technique: svg
+        compensations: ["Scatter isn't available in Mermaid; SVG file beside the .md"]
+      html/document: {technique: svg}
+  - id: v4
+    questions: [q4]
+    datasets: [wait_minutes]
+    audience: [managers]
+    placement: body
+    intent:
+      visual_type: histogram
+      rationale: >-
+        "How long do visitors wait" is a distribution question over 300 individual
+        visits: histogram. The median is not plotted, so a rule callout marks it.
+        The long right tail is real and part of the answer.
+      headline: "Half of the 300 surveyed visits waited 7.8 minutes or less; the longest took 47.5"
+      headline_status: draft
+      fields:
+        value: wait_min
+        names: {wait_min: Wait (minutes)}
+      callouts:
+        - {kind: rule, x: 7.8, text: "Median 7.8 min"}
+        - {kind: note, text: "Longest wait 47.5 min; n = 300 visits"}
+      outlier_handling:
+        method: accept
+        reason: "The 10 IQR outliers (27.1 to 47.5 min) are the distribution's real right tail; a histogram reads fine with them"
+      units: Visits
+    renderings:
+      md/document:
+        technique: svg
+        compensations: ["Histogram isn't available in Mermaid; SVG file beside the .md"]
+      html/document: {technique: svg}
+  - id: v5
+    questions: [q3]
+    datasets: [branch_overview, branch_waits]
+    audience: [managers]
+    placement: appendix
+    intent:
+      visual_type: table
+      rationale: >-
+        Four measures across twelve branches have no single takeaway; the draft's
+        48-bar grouped chart becomes a reference table. Average wait is joined in
+        so the appendix the draft promises ("average waits by branch") lives in one
+        table.
+      headline: "Central is the largest branch by visits, hours, staff and events; Riverside has the longest average wait"
+      headline_status: draft
+      fields:
+        columns: [branch, visits_k, open_hours, staff_fte, avg_wait_min, events]
+        sort: data
+        names:
+          branch: Branch
+          visits_k: Visits (k)
+          open_hours: Open hours
+          staff_fte: Staff (FTE)
+          avg_wait_min: Avg wait (min)
+          events: Events
+      highlight: [Riverside]
+      outlier_handling:
+        method: accept
+        reason: "A table shows exact values; Central's and Riverside's extremes need no axis treatment"
+    renderings:
+      md/document: {technique: table}
+      html/document: {technique: table}
+recommendations:
+  - kind: order
+    detail: >-
+      Lead with v1 (loans, the main question, read by both audiences), then v2
+      (membership) in the summary; branch staffing (v3) and wait distribution
+      (v4) in the body for managers; the branch table (v5) in the appendix. The
+      draft currently opens with Café revenue and puts Loans third.
+    affects: [v1, v2, v3, v4, v5]
+  - kind: merge
+    detail: >-
+      Replace the draft's two Loans bar charts (print, e-book) with one line
+      chart. Render from the combined file already present at
+      data/derived/loans_by_quarter.csv (columns quarter, print, ebook).
+    affects: [v1]
+  - kind: merge
+    detail: >-
+      For the appendix table, provide one combined dataset: branch_overview
+      (branch, visits_k, open_hours, staff_fte, events) left-joined to
+      branch_waits on branch, adding avg_wait_min. staff_fte appears in both and
+      matches in the profiled rows; keep one copy.
+    affects: [v5]
+  - kind: demote
+    detail: >-
+      Drop the grouped bar chart of four measures for twelve branches (48 bars):
+      no single takeaway and four different units. Keep the numbers as the
+      appendix table v5.
+    affects: [v5]
+  - kind: cut
+    detail: >-
+      Café revenue does not answer q2 ("How many people actively use the
+      library?") or any other question. Remove the Café revenue section and its
+      chart, or move it out of this review. If the caller intends café sales as
+      a proxy for footfall, that needs a question of its own.
+    affects: [cafe_sales]
+  - kind: add-summary
+    detail: >-
+      The draft's Membership section states 48,210 as a bare sentence. Show it
+      as the v2 stat tile with its change (+1,510, +3.2%) in the summary. The
+      caller must say what "previous" is (prior year? prior quarter?) so the
+      tile can label the comparison.
+    affects: [v2]
+  - kind: placement
+    detail: >-
+      The draft puts "average waits by branch" in an appendix and never shows
+      Riverside. Move the staffing-vs-wait evidence (v3) into the body under
+      Waiting times so the Conclusion's "Riverside needs attention" is backed by
+      a visual; keep full per-branch numbers in v5.
+    affects: [v3, v5]
+  - kind: rendering
+    detail: >-
+      The draft uses Mermaid xychart in Markdown. v1 needs its callouts (the 18%
+      total isn't a plotted series), and v3/v4 are scatter and histogram, which
+      Mermaid can't draw, so use SVG in Markdown as well as HTML.
+    affects: [v1, v3, v4]
+  - kind: other
+    detail: >-
+      Q1's confirmed takeaway is accurate, but total loans in Q3 '26 (1,035) are
+      still about 16% below Q1 '26 (1,230): print has not recovered. The board
+      may read "recovered and grown" as total use recovering. Consider whether
+      the Conclusion should say so; the headline is left as given.
+    affects: [v1]
+  - kind: other
+    detail: >-
+      wait_minutes has no branch column, so v4 can't show Riverside's visits
+      against the rest. If the survey export can include branch, v4 could
+      highlight Riverside's waits within the distribution.
+    affects: [v4]
+color_map:
+  E-book: accent
+  Print: context
+  Riverside: accent
+  Eastgate: context

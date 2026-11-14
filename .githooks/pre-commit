@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Fast pre-commit backstop: frontmatter and privacy on what's being committed.
+# The full gate set runs in scripts/check-all.sh and CI.
+# Enable once per clone:  git config core.hooksPath .githooks
+set -uo pipefail
+
+repo_root="$(git rev-parse --show-toplevel)"
+cd "$repo_root" || exit 1
+
+files=()
+while IFS= read -r f; do files+=("$f"); done < <(git diff --cached --name-only --diff-filter=ACM)
+[ "${#files[@]}" -eq 0 ] && exit 0
+
+py=".venv/bin/python"
+[ -x "$py" ] || py="python3"
+
+"$py" scripts/check_frontmatter.py || exit 1
+exec bash scripts/check-privacy.sh "${files[@]}"

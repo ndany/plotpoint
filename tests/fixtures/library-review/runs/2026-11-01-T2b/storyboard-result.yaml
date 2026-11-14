@@ -1,0 +1,251 @@
+visuals:
+- id: v1
+  questions:
+  - q1
+  datasets:
+  - loans_print
+  - loans_ebook
+  audience:
+  - board
+  - managers
+  placement: summary
+  intent:
+    visual_type: line
+    rationale: Change over time across five quarters; two series on one measure; the renovation quarter
+      is the moment that matters
+    headline: Total loans fell 18% during the renovation; e-book loans have since recovered and grown
+    headline_status: confirmed
+    fields:
+      x: quarter
+      y:
+      - print
+      - ebook
+      names:
+        print: Print
+        ebook: E-book
+    highlight:
+    - ebook
+    callouts:
+    - kind: rule
+      x: Q2 '26
+      text: 'Q2 renovation
+
+        Total 1,230 → 1,008 (−18%)'
+    outlier_handling:
+      method: none_flagged
+    units: Loans (thousands)
+  data:
+    path: data/derived/loans_by_quarter.csv
+  data_note: Join loans_print and loans_ebook on quarter (columns quarter, print, ebook); the file already
+    exists at this path
+  renderings:
+    md/document:
+      technique: svg
+    html/document:
+      technique: svg
+- id: v2
+  questions:
+  - q2
+  datasets:
+  - members
+  audience:
+  - board
+  placement: summary
+  intent:
+    visual_type: number
+    rationale: The question asks for one number; a stat tile with its change answers it
+    headline: 48,210 people actively use the library, up 1,510 (3.2%) on the previous count
+    headline_status: draft
+    fields:
+      value: value
+      label: metric
+      previous: previous
+    outlier_handling:
+      method: none_flagged
+  renderings:
+    md/document:
+      technique: text
+    html/document:
+      technique: text
+- id: v3
+  questions:
+  - q3
+  datasets:
+  - branch_waits
+  audience:
+  - board
+  placement: summary
+  intent:
+    visual_type: sentence
+    rationale: Staffing is a board decision; the board needs the finding in one line, the detail sits
+      in the body
+    headline: Riverside's average wait of 48 minutes is far above every other branch at similar staffing
+      (4.5 FTE)
+    headline_status: confirmed
+    outlier_handling:
+      method: callout
+      reason: Riverside's wait is the finding
+  renderings:
+    md/document:
+      technique: text
+    html/document:
+      technique: text
+- id: v4
+  questions:
+  - q3
+  datasets:
+  - branch_waits
+  audience:
+  - managers
+  placement: body
+  intent:
+    visual_type: scatter
+    rationale: '''At similar staffing'' compares two measures per branch; a scatter puts Riverside beside
+      branches with the same FTE'
+    headline: Riverside's average wait is far above every other branch at similar staffing
+    headline_status: confirmed
+    fields:
+      x: staff_fte
+      y: avg_wait_min
+      label: branch
+      names:
+        staff_fte: Staff (FTE)
+        avg_wait_min: Average wait (minutes)
+    highlight:
+    - Riverside
+    outlier_handling:
+    - column: avg_wait_min
+      method: callout
+      reason: Riverside's wait is the finding
+    - column: staff_fte
+      method: accept
+      reason: Central's 24 FTE is real (largest branch); it stretches the x axis but the small branches
+        stay readable
+  renderings: &id001
+    md/document:
+      technique: svg
+    html/document:
+      technique: svg
+- id: v5
+  questions:
+  - q4
+  datasets:
+  - wait_minutes
+  audience:
+  - managers
+  placement: body
+  intent:
+    visual_type: histogram
+    rationale: How long people wait is a distribution question; a histogram shows the typical wait and
+      the long tail
+    headline: Half of visits get help within 7.8 minutes, but a long tail waits 30 minutes or more
+    headline_status: draft
+    fields:
+      value: wait_min
+      names:
+        wait_min: Wait (minutes)
+    callouts:
+    - kind: rule
+      x: 7.8
+      text: Median 7.8 min
+    outlier_handling:
+      method: accept
+      reason: The long tail is real waiting time and part of the answer
+    units: Wait (minutes)
+  renderings: *id001
+- id: v6
+  questions:
+  - q3
+  datasets:
+  - branch_overview
+  audience:
+  - managers
+  placement: appendix
+  intent:
+    visual_type: table
+    rationale: 'Four measures across 12 branches with no single takeaway: a reference table'
+    headline: 'Branch operations, FY26: visits, opening hours, staff and events'
+    headline_status: title
+    fields:
+      columns:
+      - branch
+      - visits_k
+      - open_hours
+      - staff_fte
+      - events
+      sort: value
+      names:
+        branch: Branch
+        visits_k: Visits (thousands)
+        open_hours: Open hours per week
+        staff_fte: Staff (FTE)
+        events: Events
+    highlight:
+    - Riverside
+  renderings:
+    md/document:
+      technique: table
+    html/document:
+      technique: table
+recommendations:
+- kind: order
+  detail: 'Lead with v1 (loans: the board''s first question and a confirmed takeaway), then the membership
+    figure (v2) and the one-line staffing finding (v3) in the summary; staffing detail (v4) and wait distribution
+    (v5) in the body; the branch table (v6) in the appendix.'
+  affects:
+  - v1
+  - v2
+  - v3
+  - v4
+  - v5
+  - v6
+- kind: merge
+  detail: 'Print and e-book loans share quarters and units and tell one story: draw one line chart from
+    the joined table rather than two charts. The headline''s total (1,230 to 1,008, -18%) isn''t a plotted
+    line, so it is carried by the renovation rule callout.'
+  affects:
+  - v1
+- kind: cut
+  detail: Café revenue doesn't measure how many people use the library (it moves with café custom, not
+    membership or visits). Drop it from q2, or attach it to a separate question if the board wants café
+    performance.
+  affects:
+  - cafe_sales
+- kind: add-summary
+  detail: 'q3 is addressed to managers, but where to add staff is a board decision: put the confirmed
+    finding in the summary as one sentence (v3), with the scatter (v4) as the evidence in the body.'
+  affects:
+  - v3
+  - v4
+- kind: demote
+  detail: 'branch_overview has four measures across 12 branches and no single takeaway: a reference table
+    in the appendix, Riverside''s row bolded. It also shows Riverside''s load (96k visits, 54 open hours
+    on 4.5 FTE), which the caller may want to cite.'
+  affects:
+  - v6
+- kind: other
+  detail: 'v1''s confirmed takeaway says e-book loans recovered, which the data supports (410 to 445,
+    a new high), but print has not: it fell further to 590 in Q3 ''26 and total loans are still below
+    the pre-renovation level (1,035 vs 1,230). Consider saying so, so the board doesn''t read ''recovered''
+    as applying to total use.'
+  affects:
+  - v1
+- kind: other
+  detail: v2 and v5 headlines are drafts. v2 assumes 'previous' is the prior count of active members;
+    confirm the comparison period and whether active members is the measure the board means by 'actively
+    use'. wait_minutes has no branch column, so v5 can't show whether the long tail comes from Riverside;
+    adding branch to that export would connect q4 to q3.
+  affects:
+  - v2
+  - v5
+- kind: rendering
+  detail: 'SVG in Markdown as well as HTML for v1, v4 and v5: v1''s rule callout carries the headline''s
+    -18%, and scatter and histogram aren''t available as Mermaid. v2 and v3 are text (HTML draws a stat
+    tile for v2); v6 is a table in both.'
+  affects:
+  - v1
+  - v4
+  - v5
+color_map:
+  E-book: accent
+  Riverside: accent

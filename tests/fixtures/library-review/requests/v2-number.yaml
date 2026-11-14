@@ -1,0 +1,13 @@
+# Mode D: a single number. No chart: text in documents, a tile on a slide.
+id: v2
+intent:
+  visual_type: number
+  headline: "The library has 48,210 active members, up 3.2%"
+  headline_status: draft
+  fields: {value: value, label: metric, previous: previous}
+  outlier_handling: {method: none_flagged}
+data: {inline: "metric,value,previous\nActive members,48210,46700\n"}
+source: "Membership system"
+as_of: 2026-09-30
+targets: [md/document, html/document, image/slide]
+out_dir: out/v2

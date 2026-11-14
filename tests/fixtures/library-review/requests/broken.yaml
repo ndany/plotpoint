@@ -1,0 +1,19 @@
+# On purpose, every check fails. Render it, read the checks, then fix one at a time.
+#  - headline_numbers: 22% isn't a change in the data (the fall was 18%), and
+#    "Central" didn't wait 48 minutes (Riverside did)
+#  - outliers: the scatter has flagged outliers but no handling
+#  - callouts: the point callout names a branch that isn't in the data
+id: broken
+intent:
+  visual_type: scatter
+  headline: "Central waits 48 minutes, 22% longer than last year"
+  headline_status: draft
+  fields: {x: staff_fte, y: avg_wait_min, label: branch}
+  callouts:
+    - {kind: point, series: Lakeview, text: "Lakeview"}
+  outlier_handling: {method: none_flagged}
+data: {path: ../data/branch_waits.jsonl}
+source: "Branch visit survey"
+as_of: 2026-09-30
+targets: [html/document]
+out_dir: out/broken

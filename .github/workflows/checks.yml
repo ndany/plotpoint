@@ -1,0 +1,48 @@
+name: Checks
+
+# Runs scripts/check-all.sh, the same gate set used locally, on every push to
+# main and every PR. Tool versions are pinned in requirements-dev.txt,
+# package.json and below, so CI can't drift from local runs.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Least privilege: read the repo only. No API writes.
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: lint, test, validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Install Python dev tools (pinned)
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install -r requirements-dev.txt
+
+      - name: Install markdownlint (pinned via package.json)
+        run: npm install --no-audit --no-fund
+
+      - name: Install Claude Code CLI (pinned) for plugin validation
+        run: npm install -g @anthropic-ai/claude-code@2.1.310
+
+      - name: Run all gates
+        run: scripts/check-all.sh

@@ -1,0 +1,24 @@
+id: r1
+question: Did the Q2 renovation reduce library use?
+takeaway: Total loans fell 18% during the renovation; e-book loans have since recovered
+  and grown
+data:
+  path: data/derived/loans_by_quarter.csv
+source: Library circulation system export
+as_of: '2026-09-30'
+targets:
+- md/document
+- html/document
+out_dir: figures/r1
+intent:
+  visual_type: line
+  rationale: "Change over time across five quarters; two series, the story is the renovation dip in total and the e-book recovery. Total isn't plotted, so it is carried by the renovation rule callout."
+  headline: "Total loans fell 18% during the Q2 renovation; e-book loans have since recovered and grown"
+  headline_status: confirmed
+  fields: {x: quarter, y: [print, ebook], names: {print: Print, ebook: E-book}}
+  highlight: [ebook]
+  callouts:
+    - {kind: rule, x: "Q2 '26", text: "Q2 renovation\nTotal 1,230 → 1,008 (−18%)"}
+    - {kind: point, x: "Q1 '26", series: ebook, text: "Pre-renovation 440"}
+  outlier_handling: {method: none_flagged}
+  units: Loans (thousands)

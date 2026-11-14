@@ -1,0 +1,36 @@
+# =============================================================================
+# plotpoint — .gitignore
+# =============================================================================
+
+# ── OS & editor artifacts ────────────────────────────────────────────────────
+.DS_Store
+*.log
+.vscode/
+
+# ── Build output ─────────────────────────────────────────────────────────────
+# Skill zips from scripts/package-skill.sh; regenerated on demand
+dist/
+
+# ── Python ───────────────────────────────────────────────────────────────────
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# ── Node ─────────────────────────────────────────────────────────────────────
+node_modules/
+
+# ── Private configuration ────────────────────────────────────────────────────
+# Extra privacy-check patterns (private names); never commit
+.privacy-patterns.local
+
+# ── Hand-testing output (docs/guide/try-it.md) ───────────────────────────────
+tests/fixtures/*/requests/out/
+tests/fixtures/*/requests/*-preview.md
+
+# ── First commit only ────────────────────────────────────────────────────────
+# One-time instructions and message for the first signed commit (D-18). Kept out
+# of history; delete both files and this block after that commit.
+docs/plans/FIRST-COMMIT-GUIDE.md
+docs/plans/COMMIT_MSG.txt

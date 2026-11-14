@@ -1,0 +1,19 @@
+# Mode D: render a planned visual (the reference storyboard's v1) to every target.
+id: v1
+intent:
+  visual_type: line
+  headline: "Total loans fell 18% during the Q2 renovation; e-book loans have since grown to a new high"
+  headline_status: confirmed
+  fields: {x: quarter, y: [print, ebook], names: {print: Print, ebook: E-book}}
+  highlight: [ebook]
+  callouts:
+    - {kind: rule, x: "Q2 '26", text: "Q2 renovation\nTotal 1,230 → 1,008 (−18%)"}
+  outlier_handling: {method: none_flagged}
+  units: Loans (thousands)
+data: {path: ../data/derived/loans_by_quarter.csv}
+source: "Library circulation system export; E-lending platform export"
+as_of: 2026-09-30
+targets: [md/document, html/document, html/slide, image/slide]
+technique: {md/document: mermaid}     # try svg instead and compare
+color_map: {E-book: accent, Print: context}
+out_dir: out/v1
