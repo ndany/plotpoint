@@ -53,9 +53,16 @@ honest by tests.
 
 1. Copy the fixture to a scratch folder and **remove** the answer files
    (`storyboard-golden.yaml`, `expected.md`, `render-data.yaml`).
+   Copy the skill folder in too, without `DESIGN.md` (it holds past test
+   findings).
 2. Run the skill in a **fresh session or sub-agent that hasn't seen the design
    or the answers**, given only the skill folder and the request. Ask it for the
-   result plus a "Skill feedback" section in `notes.md`.
+   result plus a "Skill feedback" section in `notes.md`. Its brief says what not
+   to open: the repository (its `docs/`, `tests/` and any `runs/` folder),
+   `DESIGN.md`, `docs/plans/`, the answer files by name, and any notes from
+   earlier tests; it reads only the scratch folder, and says in `notes.md` if it
+   opened anything else. Afterwards, check its transcript for reads outside the
+   scratch folder and record the result in `notes.md`.
 3. Save the outputs to `tests/fixtures/library-review/runs/<date>-<test>/`:
    `storyboard-result.yaml` (T1, T2), `notes.md`, and for T3 the render requests.
 4. `pytest` checks every saved storyboard result against E1–E11
