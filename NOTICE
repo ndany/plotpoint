@@ -25,6 +25,10 @@ these works are not affiliated with this project and do not endorse it.
   (https://github.com/vega/vl-convert), by the Vega project contributors,
   BSD-3-Clause. Used as a runtime dependency (vl-convert-python), not
   included in this repository.
+- Source Sans 3 (https://github.com/adobe-fonts/source-sans), copyright 2010-2022
+  Adobe, SIL Open Font License 1.1. The Regular, Semibold and Bold TTF files
+  are included unmodified in plugins/plotpoint/skills/visualize/fonts/ with
+  the license text (OFL.txt).
 - The dataviz skill, by Anthropic. plotpoint applies its rendering method;
   no text or code from it is included. plotpoint's palette is its own,
   checked with that skill's palette validator.

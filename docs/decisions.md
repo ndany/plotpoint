@@ -298,3 +298,29 @@ program is plotpoint's own venv Python and the arguments are the caller's own,
 with no shell.
 **Revisit:** if uv becomes a requirement, a Claude client can run setup with the
 user's approval, or the dependencies change.
+
+## D-27: Slide images use a bundled font, checked pixel for pixel
+
+**Chosen:** the skill bundles Source Sans 3 (Regular, Semibold, Bold; SIL OFL
+1.1) in `fonts/` and registers it with vl-convert once. `image/slide` text uses
+`slide_font` from `config/theme.yaml`; documents and `html/slide` keep the
+reader's system fonts. Slide charts are laid out with vl-convert's built-in
+`sans-serif` (`slide_measure_font`) and drawn in the bundled font, because
+vl-convert 1.9 measures a font it doesn't ship differently on Linux. A test
+compares each fixture slide's decoded pixels with stored hashes
+(`tests/fixtures/slide-hashes.yaml`) on Linux, macOS and Windows.
+**Alternatives:** system fonts (each machine drew a different PNG); embed the
+font in the SVG or turn text into outlines (about 1.2 MB per SVG, no gain for
+the PNG); measure with the bundled font (broke cross-platform identity); compare
+images with a tolerance (exact hashes already match on all three platforms, and
+a tolerance can hide a real change).
+**Rationale:** a slide must look the same wherever it's rendered, and only an
+exact check proves it.
+**Cost:** 1.2 MB of fonts in the skill. Legends and axes are spaced for slightly
+wider text than drawn. A glyph Source Sans 3 lacks still falls back to a system
+font. The slide `.svg` written beside the PNG names the font without embedding
+it, so on a machine without Source Sans 3 it shows a substitute: use the PNG
+for slides. Any vl-convert or font update changes the hashes; refresh them after
+looking (`docs/testing.md`, "Platform checks").
+**Revisit:** if vl-convert measures registered fonts the same on every platform
+(drop `slide_measure_font`), can disable system fonts, or the font changes.

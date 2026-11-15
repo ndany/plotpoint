@@ -36,6 +36,19 @@ class Layout:
     def is_slide(self) -> bool:
         return self.kind == "slide"
 
+    @property
+    def font(self) -> str:
+        """Font stack: the bundled font for slide images, system fonts elsewhere."""
+        t = config.theme()
+        return t["slide_font"] if self.target == "image/slide" else t["font"]
+
+    @property
+    def measure_font(self) -> str:
+        """Font Vega-Lite measures text with; slide charts are redrawn in `font`."""
+        if self.target == "image/slide":
+            return config.theme()["slide_measure_font"]
+        return self.font
+
     def display_ratio(self) -> float:
         """Smallest expected display width / drawing width (<= 1)."""
         drawn = self.canvas[0] if self.canvas else self.width

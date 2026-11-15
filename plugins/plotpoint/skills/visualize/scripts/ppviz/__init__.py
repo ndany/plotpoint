@@ -9,6 +9,7 @@ from pathlib import Path
 
 SKILL_DIR = Path(__file__).resolve().parents[2]
 CONFIG_DIR = SKILL_DIR / "config"
+FONT_DIR = SKILL_DIR / "fonts"
 SCHEMA_PATH = SKILL_DIR / "schemas" / "plotpoint.schema.json"
 
 __version__ = "0.1.0"

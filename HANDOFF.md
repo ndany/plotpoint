@@ -51,7 +51,7 @@
    | ID | Fix | Status |
    | --- | --- | --- |
    | C1 | Status shows in the artifact itself: a visible DRAFT or CHECKS FAILED mark (today the draft marker is an HTML comment, and failed renders write polished files) | open |
-   | C2 | Slide PNGs render the same on macOS and Windows (they depend on locally installed fonts) | open |
+   | C2 | Slide PNGs render the same on macOS and Windows (they depend on locally installed fonts). Done 2026-11-15 (D-27): bundled Source Sans 3; fixture slides are pixel-identical on Linux, macOS and Windows (CI) | done |
    | C3 | Any edit to the caller's takeaway sets `headline_status: draft` (2 of 2 runs changed the wording and kept `confirmed`; one didn't say so) | open |
    | C4 | Dependency bootstrap for an installed skill. Decided 2026-11-14: `uv run` when uv is installed (PEP 723 metadata in `visualize.py`, kept identical to `requirements.txt` by a test); otherwise `visualize.py` checks its imports first and stops with the exact per-OS commands (`py` / `python3`, a venv in the user cache folder, PEP 668), and `SKILL.md` says to show that message to the user, never work around it. Done 2026-11-15 (D-28): also re-runs itself with the cache venv once it exists, so setup happens once; green on macOS and Windows CI. Needs the mode D recorded run | done; recorded run pending |
    | C5 | CI on `windows-latest` and `macos-latest` (with Dependabot's actions bumps, D-24), plus one manual try-it run on Windows. CI done 2026-11-14: pytest on macOS and Windows, Python 3.11 and 3.13; it found and fixed a crash printing non-ASCII output on Windows. The manual Windows run follows the pushed fixes | CI done; Windows run open |
@@ -103,6 +103,7 @@ stay when their status changes.
 | Improvement | open | **`preview` command** (chart with headline and source, as a PNG) | Step 5 works with `vl_convert.svg_to_png` | Viewing takes a manual step (T3c) | Real use finds it slow |
 | Improvement | open | **More visual types** (small multiples, slope, dot plot, heatmap) | v1 scope | Drawn by hand following dataviz | Real use asks for one |
 | Improvement | open | **Tables and sentences as slide images** | v1 scope | Use `html/slide` | A deck needs them |
+| Improvement | open | **Caller-chosen fonts:** (A) HTML fragments inherit the host page's font instead of setting their own; (B) a `font` option per request or storyboard (font files plus family) for slides and Markdown charts. Today `config/theme.yaml` decides (`font`, `slide_font`, D-27) and only editing the installed plugin changes it | Not a correctness fix; C2 made the default consistent first | Visuals can't match the document's own font; editing `theme.yaml` is lost on plugin update | A real write-up needs its own font (for example the Windows use cases) |
 | Improvement | open | **Dark-mode SVG variants** | v1 scope | Static SVGs are light only | A dark page uses plotpoint |
 | Improvement | open | **Excel and Parquet input** | Heavy dependencies (D-9) | Callers export to CSV | A caller needs them |
 | Improvement | open | **Bin edges as derivable numbers** in the headline check | Vega-Lite picks bins; matching them needs its binning logic | A histogram note can't cite "45–50" | A real histogram headline needs it |

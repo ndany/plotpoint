@@ -15,6 +15,7 @@ or organizations is affiliated with plotpoint or endorses it.
 | Okabe-Ito palette | Masataka Okabe, Kei Ito | Colorblind-safe categorical palette in the fallback rendering rules | Seven color values listed |
 | Information Dashboard Design | Stephen Few | At-a-glance dashboard principles | Ideas, paraphrased |
 | [Vega-Lite](https://vega.github.io/vega-lite/) and [vl-convert](https://github.com/vega/vl-convert) | Vega project contributors (BSD-3-Clause) | The chart grammar and offline renderer behind every SVG, PNG and interactive chart | Runtime dependency (`vl-convert-python`); not redistributed |
+| [Source Sans 3](https://github.com/adobe-fonts/source-sans) | Adobe (SIL Open Font License 1.1) | Regular, Semibold and Bold TTFs (release 3.052R) used for slide images so they look the same on every machine | Font files redistributed unmodified in `plugins/plotpoint/skills/visualize/fonts/` with their license |
 | dataviz skill | Anthropic | Rendering method: form heuristic, color formula, mark specs, accessibility; palette validator | Method applied; palette checked with its validator; no text or code copied |
 
 ## Citation

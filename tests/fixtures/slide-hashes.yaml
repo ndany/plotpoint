@@ -1,0 +1,6 @@
+# SHA-256 of the decoded pixels of each fixture slide image (image/slide), rendered
+# with the bundled Source Sans 3 font. Must match on macOS, Windows and Linux.
+# v1 line, v2 big number, v5 histogram.
+v1: c0c9425fb06ad64e3bb23abf96f7f447ba208a13f928ae5730e3ea2f6642fb3f
+v2: edccefbb6bd0a7dca3c1f091129fd7a678b7770fb6d7792213b57a8e74f980be
+v5: 279bba99d731efa8fa2fd349dc3a7fa69ab0b1c6dd75b06e67eaa78088551e02

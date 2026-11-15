@@ -486,3 +486,84 @@ def test_try_it_requests_behave_as_documented(workdir: Path) -> None:
     assert failed == {"headline_numbers", "outliers", "callouts"}
     with pytest.raises(render.RenderError, match="needs an intent"):
         render.render(docio.load(reqs / "mode-c.yaml"), reqs)
+
+
+# --- bundled slide font (C2): slide PNGs must not depend on system fonts ---------
+
+
+def _slide(work: Path, vid: str) -> tuple[str, Path]:
+    gold = docio.load(work / "storyboard-golden.yaml")
+    v = next(v for v in gold["visuals"] if v["id"] == vid)
+    res = render.render(
+        _request(work, v, ["image/slide", "html/document"], gold["color_map"]), work
+    )
+    outs = res["outputs"]
+    png = work / outs["image/slide"]["files"][0]
+    return outs, png
+
+
+def test_bundled_font_files_exist_with_license() -> None:
+    from ppviz import FONT_DIR
+
+    for name in ("Regular", "Semibold", "Bold"):
+        assert (FONT_DIR / f"SourceSans3-{name}.ttf").stat().st_size > 100_000
+    assert "SIL OPEN FONT LICENSE Version 1.1" in (FONT_DIR / "OFL.txt").read_text()
+
+
+def test_slide_names_bundled_family_and_documents_keep_system_stack(
+    workdir: Path,
+) -> None:
+    theme = config.theme()
+    assert "Source Sans 3" in theme["slide_font"]
+    outs, _ = _slide(workdir, "v1")
+    slide_svg = (workdir / outs["image/slide"]["files"][1]).read_text()
+    families = set(re.findall(r'font-family="([^"]*)"', slide_svg))
+    # every text element, including the chart's, names the bundled family
+    assert families == {"&#x27;Source Sans 3&#x27;, sans-serif"}, families
+    assert "Segoe UI" not in slide_svg and "system-ui" not in slide_svg
+    # chart text inside the slide uses the bundled family too
+    assert slide_svg.count("Source Sans 3") > 5
+    doc_svg = (workdir / outs["html/document"]["files"][0]).read_text()
+    assert "Source Sans 3" not in doc_svg
+    assert "Segoe UI" in doc_svg
+
+
+def test_fonts_are_registered_once(workdir: Path, monkeypatch) -> None:
+    calls: list[str] = []
+    monkeypatch.setattr(render.vlc, "register_font_directory", calls.append)
+    monkeypatch.setattr(render, "_fonts_registered", False)
+    _slide(workdir, "v1")
+    _slide(workdir, "v3")
+    assert calls == [str(render.FONT_DIR)]
+
+
+def _pixel_hash(png: Path) -> str:
+    """SHA-256 of the decoded image data, so PNG compression details don't matter."""
+    import hashlib
+    import zlib
+
+    data, pos, idat = png.read_bytes(), 8, b""
+    while pos < len(data):
+        n = struct.unpack(">I", data[pos : pos + 4])[0]
+        if data[pos + 4 : pos + 8] == b"IDAT":
+            idat += data[pos + 8 : pos + 8 + n]
+        pos += 12 + n
+    return hashlib.sha256(zlib.decompress(idat)).hexdigest()
+
+
+def test_slide_png_is_identical_on_every_platform(workdir: Path) -> None:
+    """Same slide, same pixels everywhere (golden hashes in fixtures/slide-hashes.yaml).
+
+    Fails if text falls back to a system font or measures differently. After an
+    intended rendering change, look at the slides, then store the hashes the
+    failure prints (docs/testing.md, Slide pixel hashes)."""
+    expected = docio.load(Path(__file__).parent / "fixtures" / "slide-hashes.yaml")
+    changed = {}
+    for vid in expected:
+        _, png = _slide(workdir, vid)
+        if (got := _pixel_hash(png)) != expected[vid]:
+            changed[vid] = got
+    assert not changed, (
+        f"slides drawn differently: {changed}. Look at them, then store the new "
+        "hashes (docs/testing.md, Slide pixel hashes)"
+    )

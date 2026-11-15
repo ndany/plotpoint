@@ -166,7 +166,7 @@ def compose_slide(
     ink, s = t["ink"], layout.sizes
     cw, ch = layout.canvas
     margin = (cw - layout.width) // 2
-    font = html.escape(t["font"], quote=True)
+    font = html.escape(layout.font, quote=True)
     parts = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{cw}" height="{ch}" '
         f'viewBox="0 0 {cw} {ch}" font-family="{font}">',

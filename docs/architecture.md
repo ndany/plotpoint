@@ -146,6 +146,7 @@ always uses the full data.
 | Dependency | Why | Licence |
 | --- | --- | --- |
 | `vl-convert-python` | Renders Vega-Lite to SVG and PNG offline, and SVG to PNG | BSD-3-Clause |
+| Source Sans 3 (bundled in `fonts/`) | Slide-image font, registered with vl-convert so PNGs don't depend on system fonts | OFL-1.1 |
 | `jsonschema` | Validates requests and results | MIT |
 | `PyYAML` | Reads YAML requests and config | MIT |
 | Mermaid CLI (`mmdc`), optional | Render-tests Mermaid output | MIT |

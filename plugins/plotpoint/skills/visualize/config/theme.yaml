@@ -4,6 +4,14 @@
 
 font: "system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"
 
+# Slide images (image/slide) use a font bundled in fonts/ so the PNG looks the same on
+# every machine. The generic fallback only covers glyphs the bundled font lacks.
+slide_font: "'Source Sans 3', sans-serif"
+# Vega-Lite sizes legends and axes by measuring text. Measuring a font vl-convert doesn't
+# bundle gives different widths per OS, so slide charts are measured with the generic
+# family (built into vl-convert, same everywhere) and drawn with slide_font.
+slide_measure_font: "sans-serif"
+
 ink:
   primary: "#1c1c1a"
   secondary: "#55544f"

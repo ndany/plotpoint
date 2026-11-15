@@ -48,6 +48,40 @@ storyboard must **order**, **merge**, **demote**, **cut**, place by
 | Visual review | Clipping, overlap, legibility, whether the claim is visible | By looking at rendered output; findings in the skill's `DESIGN.md` |
 | Viewer check | VS Code and GitHub render the Mermaid output | Manual, when the Mermaid version changes |
 
+## Testing a fix
+
+Every fix lands with tests, in its own commit:
+
+1. **Prove the test.** Run each new test against the code *without* the fix (a
+   temporary copy, not `git stash`, which worktrees share) and confirm it
+   fails; then restore the fix and confirm it passes. A test that passes either
+   way proves nothing.
+2. **Run the gates.** `scripts/check-all.sh` passes locally before every commit.
+3. **Platform checks** for anything that could differ by operating system
+   (paths, encodings, fonts, processes, installs): push the work to a scratch
+   branch and run the CI matrix on it before it reaches `main`:
+
+   ```bash
+   git push -u origin wip/<name>
+   gh workflow run checks.yml --ref wip/<name>
+   gh run watch
+   ```
+
+   CI runs the full gates on Ubuntu and pytest on macOS and Windows with Python
+   3.11 and 3.13. Delete the branch once the work is on `main`.
+4. **Look at rendering changes** (below, and the worked example).
+
+### Slide pixel hashes
+
+`test_slide_png_is_identical_on_every_platform` compares fixture slides'
+decoded pixels with `tests/fixtures/slide-hashes.yaml` (D-27). It fails when
+anything changes the drawing: a vl-convert or font update (including a
+Dependabot bump), a theme or layout change, or text falling back to a system
+font. When it fails after an intended change: render the slides, **look** at
+them, and only then store the new hashes. The test's failure message gives the
+new hash for each slide. Run the CI matrix too: the stored hashes must hold on
+every platform.
+
 ## Recording a model run (T1–T3)
 
 Model behavior can't be unit-tested, so runs are recorded and their results kept

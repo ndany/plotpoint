@@ -21,7 +21,7 @@ target; the **technique** (how it's drawn) can differ per target.
 | HTML | `svg` (default): an inline SVG inside a `<figure>` | No scripts; prints and emails well; safe under strict page policies | No hover |
 | HTML | `vega`: interactive Vega-Lite | Hover tooltips | The page must load Vega once (the fragment's comment gives the three `<script>` tags) |
 | HTML | `table`, `text` | Exact values; a single figure | — |
-| Image | `png` at 2× | Slides | Static. Tables and sentences aren't rendered as slide images in v1 |
+| Image | `png` at 2× | Slides | Static; set in the bundled Source Sans 3 (`fonts/`, `slide_font` in `config/theme.yaml`), not system fonts, so it looks the same on every machine. Tables and sentences aren't rendered as slide images in v1 |
 
 **Choosing per target.** Keep the intent identical; pick the technique that
 carries it best:

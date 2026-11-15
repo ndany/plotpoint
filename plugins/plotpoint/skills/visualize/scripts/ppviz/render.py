@@ -6,6 +6,7 @@ from a storyboard) says what to show; this module draws it.
 
 from __future__ import annotations
 
+import html
 import json
 import tempfile
 from pathlib import Path
@@ -14,6 +15,7 @@ from typing import Any
 import vl_convert as vlc
 
 from . import (
+    FONT_DIR,
     checks,
     colors,
     config,
@@ -33,6 +35,17 @@ TEXTUAL = ("table", "number", "sentence")
 
 class RenderError(ValueError):
     pass
+
+
+_fonts_registered = False
+
+
+def _register_fonts() -> None:
+    """Make vl-convert load the bundled fonts (once), for slide measuring and PNGs."""
+    global _fonts_registered
+    if not _fonts_registered:
+        vlc.register_font_directory(str(FONT_DIR))
+        _fonts_registered = True
 
 
 def _one_line(text: str) -> str:
@@ -306,10 +319,16 @@ def _render_target(
             raise RenderError(
                 f"{vt} isn't rendered as a slide image in v1; use html/slide"
             )
+        _register_fonts()
         chart_svg = None
         if vt in CHARTS:
             chart_svg = vlc.vegalite_to_svg(
                 json.dumps(_chart_spec(shaped, intent, cmap, lay, True))
+            )
+            # measured with the generic family, drawn with the bundled font
+            chart_svg = chart_svg.replace(
+                f'font-family="{lay.measure_font}"',
+                f'font-family="{html.escape(lay.font, quote=True)}"',
             )
         slide = output.compose_slide(
             chart_svg, headline, notes, source, as_of, lay, big

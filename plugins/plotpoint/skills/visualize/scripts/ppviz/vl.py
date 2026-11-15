@@ -35,7 +35,7 @@ def base(layout: Layout, transparent: bool) -> dict[str, Any]:
         "autosize": {"type": "fit", "contains": "padding"},
         "background": None if transparent else ink["surface"],
         "config": {
-            "font": t["font"],
+            "font": layout.measure_font,
             "view": {"stroke": None},
             "axis": {
                 "labelFontSize": s["label"],
@@ -59,7 +59,7 @@ def base(layout: Layout, transparent: bool) -> dict[str, Any]:
                 "symbolStrokeWidth": s["line_width"],
                 "direction": "horizontal",
             },
-            "text": {"font": t["font"]},
+            "text": {"font": layout.measure_font},
         },
     }
 
