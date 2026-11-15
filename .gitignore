@@ -28,3 +28,6 @@ node_modules/
 # ── Hand-testing output (docs/guide/try-it.md) ───────────────────────────────
 tests/fixtures/*/requests/out/
 tests/fixtures/*/requests/*-preview.md
+
+# Agent worktrees (Claude Code isolation)
+.claude/worktrees/

@@ -15,6 +15,7 @@
   // Generated output and recorded model runs are kept verbatim, not hand-edited.
   "ignores": [
     "node_modules/**",
+    ".claude/worktrees/**",
     ".venv/**",
     "dist/**",
     "docs/examples/**/README.md",
