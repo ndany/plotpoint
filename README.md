@@ -64,11 +64,15 @@ marketplaces members can add.)
 
 ### Script dependencies
 
-The skill's scripts need Python 3.11+ and three packages:
-
-```bash
-pip install -r plugins/plotpoint/skills/visualize/scripts/requirements.txt
-```
+The skill's scripts need Python 3.11+ and three packages. With
+[uv](https://docs.astral.sh/uv/) installed there is nothing to do: the skill runs
+`uv run .../visualize.py`, which installs them on first use. Without uv,
+`visualize.py` stops (exit code 3) and prints the exact commands for your OS: a
+virtual environment in the per-user cache folder (macOS `~/Library/Caches/plotpoint/venv`,
+Windows `%LOCALAPPDATA%\plotpoint\venv`, Linux `~/.cache/plotpoint/venv`) plus
+`pip install -r scripts/requirements.txt` into it. Claude shows you that message
+rather than installing anything itself. Once that venv exists, `visualize.py` finds and
+uses it automatically.
 
 Optional: the Mermaid CLI (`npm install -g @mermaid-js/mermaid-cli`) to
 render-test Mermaid output. Recommended: Anthropic's **dataviz** skill (bundled

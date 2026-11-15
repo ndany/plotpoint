@@ -18,13 +18,17 @@ each visual so the takeaway is obvious.
 | `schemas/plotpoint.schema.json` | Request and result contract |
 | `config/` | Layout presets, theme, capacity limits |
 | `scripts/visualize.py` | Command line: `profile`, `render` (with `--dry-run`), `validate` |
+| `scripts/bootstrap.py` | Dependency check before the engine loads; exit code 3 and setup commands if anything is missing |
 | `scripts/ppviz/` | The engine: load, profile, shape, draw, check |
 | `DESIGN.md` | Rationale and test findings |
 
 ## Requirements
 
-Python 3.11+ and `pip install -r scripts/requirements.txt` (jsonschema, PyYAML,
-vl-convert-python). Optional: the Mermaid CLI, to test Mermaid output.
+Python 3.11+ and three packages (jsonschema, PyYAML, vl-convert-python;
+`scripts/requirements.txt`). With [uv](https://docs.astral.sh/uv/), `uv run
+scripts/visualize.py ...` installs them itself; without it, `visualize.py` stops
+with exit code 3 and prints the commands for your OS (a venv in the per-user
+cache folder); once it exists the script re-runs itself with it. Optional: the Mermaid CLI, to test Mermaid output.
 Recommended: Anthropic's dataviz skill.
 
 Callers: start with the repository's

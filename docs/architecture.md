@@ -33,6 +33,13 @@ marked `draft`.
 | Engine | `scripts/ppviz/` | Deterministic: load, profile, shape, draw, check |
 | Configuration | `config/*.yaml` | Layout presets, theme, capacity limits; tuned without code changes |
 
+Before the engine loads, `scripts/bootstrap.py` (standard library only) checks the
+Python version and that each dependency imports. If not, it re-runs `visualize.py` with the
+cache venv's Python when that exists, else `visualize.py` exits 3
+with the per-OS setup commands and does no work; with `uv run`, the PEP 723 block
+in `visualize.py` (kept identical to `requirements.txt` by a test) installs the
+dependencies instead.
+
 The split matters: judgment stays with the model, where it belongs, and
 everything that can be computed (numbers, sizes, colors, checks) is computed in
 code, so it's repeatable and testable.

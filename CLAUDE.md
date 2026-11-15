@@ -66,7 +66,7 @@ scripts/check-all.sh
 markdownlint, ruff (lint + format), shellcheck, pytest (engine, schemas, checks,
 renders, recorded runs), frontmatter, privacy, `claude plugin validate`. Mermaid
 render tests need the Mermaid CLI (`mmdc`) and are skipped without it.
-Lint suppressions: report the count before adding any (currently three, each
+Lint suppressions: report the count before adding any (currently four, each
 justified inline).
 
 ### Testing

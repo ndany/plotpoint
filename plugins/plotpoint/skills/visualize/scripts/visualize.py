@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#     "jsonschema>=4.21,<5",
+#     "PyYAML>=6.0,<7",
+#     "vl-convert-python>=1.9,<2",
+# ]
+# ///
 """plotpoint visualize: command-line entry point.
 
 Usage (paths in a request resolve relative to the request file's folder):
@@ -13,6 +21,8 @@ Usage (paths in a request resolve relative to the request file's folder):
                                        renderRequest or renderResult
 
 Requires: pyyaml, jsonschema, vl-convert-python (scripts/requirements.txt).
+Run with `uv run visualize.py ...`, or a Python that has them. If anything is
+missing it exits 3 with the setup commands for this OS and does no work.
 """
 
 from __future__ import annotations
@@ -22,6 +32,10 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import bootstrap  # noqa: E402  (stdlib only)
+
+bootstrap.ensure()  # before ppviz, which imports the dependencies
 
 from ppviz import data, docio, profile, render, schema  # noqa: E402  (after the path setup)
 

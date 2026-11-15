@@ -268,3 +268,33 @@ every gate passes with it.
 can hold the package back later.
 **Revisit:** each npm Dependabot update; drop the override when `npm ls` shows the
 direct dependency resolves a fixed version by itself.
+
+## D-28: Dependency bootstrap: uv when available, otherwise stop and say how
+
+**Chosen:** `visualize.py` carries PEP 723 metadata, so `uv run` installs its
+dependencies itself (a test keeps the list identical to `requirements.txt`).
+Without uv, a standard-library-only `bootstrap.py` checks the Python version and
+imports before anything else runs. If a per-user cache venv exists
+(`~/Library/Caches/plotpoint/venv` on macOS, `%LOCALAPPDATA%\plotpoint\venv` on
+Windows, `~/.cache/plotpoint/venv` on Linux), the script re-runs itself with
+that venv's Python (same arguments, exit code passed through, loop guard).
+Otherwise it does nothing, exits with code 3 and prints the setup commands for
+the current OS. `SKILL.md` tells Claude to show that message to the user and
+stop: no global installs, no hunting for other environments.
+**Alternatives:** create the venv and install automatically on first run
+(hidden network and disk side effects; fails offline or when locked down);
+document `pip install` only (breaks on externally managed Pythons, PEP 668, and
+on `python` / `python3` / `py` differences); vendor wheels (large and
+platform-specific); reuse any `.venv` found nearby (invisible and
+unreproducible: the workaround the tour found).
+**Rationale:** a missing dependency stops all output, so the user must see it and
+be able to fix it by copy and paste; setup happens once, and uv makes it one
+step.
+**Cost:** one more module; the dependency list kept twice (tested); the re-run
+starts a second Python (about 0.1 s). Starting that process needs one lint
+suppression (`# noqa: S603`, justified inline, as for the Mermaid CLI): ruff
+flags any program start in case its arguments are attacker-controlled, but this
+program is plotpoint's own venv Python and the arguments are the caller's own,
+with no shell.
+**Revisit:** if uv becomes a requirement, a Claude client can run setup with the
+user's approval, or the dependencies change.

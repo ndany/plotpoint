@@ -13,8 +13,12 @@ The caller owns the analysis, the prose and the final layout; this skill
 analytical conclusion.
 
 Two operations. Work out which one the caller wants, then follow only that
-section. Run scripts with `python <this-skill>/scripts/visualize.py`; they need
-`pip install -r <this-skill>/scripts/requirements.txt`.
+section. Run `uv run <this-skill>/scripts/visualize.py ...` when `uv` is on PATH (it
+installs the dependencies itself). Otherwise use `python3` (macOS, Linux) or `py`
+(Windows); the script finds its own cache venv once it exists. If the script stops
+with a missing-dependency message (exit code 3), **show that message to the
+user and stop**: don't install packages globally, don't look for another
+environment, don't work around it.
 
 | Operation | Input | Output |
 | --- | --- | --- |

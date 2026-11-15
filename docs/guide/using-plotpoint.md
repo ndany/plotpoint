@@ -10,12 +10,12 @@ New to plotpoint? Start with the hands-on tour: [`try-it.md`](try-it.md).
 
 ## Setup
 
-Install the plugin (see the [README](../../README.md)) and the script
-dependencies once:
-
-```bash
-pip install -r <skill-folder>/scripts/requirements.txt   # jsonschema, PyYAML, vl-convert-python
-```
+Install the plugin (see the [README](../../README.md)). The scripts need Python
+3.11+, jsonschema, PyYAML and vl-convert-python. With
+[uv](https://docs.astral.sh/uv/), run `uv run <skill-folder>/scripts/visualize.py ...`
+and the dependencies install themselves. Without uv, `visualize.py` exits with
+code 3 and prints the commands for your OS (a venv in the per-user cache
+folder); run them once; later runs find that venv by themselves.
 
 Optional: the Mermaid CLI (`npm install -g @mermaid-js/mermaid-cli`) lets the
 renderer test Mermaid output.
