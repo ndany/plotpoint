@@ -29,7 +29,20 @@ from .data import Table
 from .layout import Layout
 from .shape import Shaped, fmt, handling_for, match_callout
 
-NUMBER_TOKEN = re.compile(r"(?<![\w'’.])([-−]?\d[\d,]*(?:\.\d+)?)(\s?%)?(?![\w'’])")
+NUMBER_TOKEN = re.compile(
+    r"(?<![\w'’.])([-−]?\d[\d,]*(?:\.\d+)?)(\s?%)?"
+    r"(?:(k|K|M|B)|\s?(bn)|\s(thousand|million|billion))?(?![\w'’])"
+)
+# Scale suffixes ('212k', '1.2M', '3bn', '4 million'); lowercase m stays minutes.
+SCALES = {"k": 3, "K": 3, "thousand": 3, "M": 6, "million": 6}
+SCALES |= {"B": 9, "bn": 9, "billion": 9}
+_UNIT_WORDS = {3: "thousands", 6: "millions", 9: "billions"}
+# A measure declared in a scaled unit: 'visits_k', 'Visits (k)', 'in thousands'.
+UNIT_HINTS = {
+    3: re.compile(r"(?:_k$|\(k\)|\bthousands?\b|\b000s\b)", re.I),
+    6: re.compile(r"(?:_m$|_mn$|\(m\)|\(mn\)|\bmillions?\b)", re.I),
+    9: re.compile(r"(?:_bn$|\(bn\)|\bbillions?\b)", re.I),
+}
 FALL = re.compile(
     r"\b(fell|fall|falls|drop\w*|declin\w*|down|decreas\w*|lower|los[st]|shr[ua]nk|cut)\b",
     re.I,
@@ -66,15 +79,40 @@ SERIES_TYPES = ("line", "bar", "stacked_bar", "number")
 SHARE_TYPES = ("bar", "stacked_bar", "table")
 
 
+def _scale(m: re.Match[str]) -> int:
+    """Power of ten a number's suffix stands for (0 without one)."""
+    suffix = m.group(3) or m.group(4) or m.group(5)
+    return SCALES[suffix.lower() if len(suffix) > 1 else suffix] if suffix else 0
+
+
 def numbers_in(text: str) -> list[tuple[float, int, bool, str]]:
-    """(value, decimals, is_percent, token) for each standalone number in text."""
+    """(value, decimals, is_percent, token) for each standalone number in text.
+    Suffixed numbers are scaled ('212k' -> 212000), and their decimals go
+    negative, so the match tolerance follows the rounding ('212k' is +-500)."""
     found = []
     for m in NUMBER_TOKEN.finditer(text):
         token = m.group(1).replace("−", "-")
         digits = token.replace(",", "")
         decimals = len(digits.split(".")[1]) if "." in digits else 0
-        found.append((float(digits), decimals, bool(m.group(2)), m.group(0).strip()))
+        exp = _scale(m)
+        found.append(
+            (
+                float(digits) * 10**exp,
+                decimals - exp,
+                bool(m.group(2)),
+                m.group(0).strip(),
+            )
+        )
     return found
+
+
+def _declared_scales(table: Table, intent: dict[str, Any]) -> set[int]:
+    """Scales the measures say they're stored in (column name, names, units)."""
+    names = (intent.get("fields") or {}).get("names") or {}
+    texts = [intent.get("units") or ""]
+    for c in _measures(table, intent):
+        texts += [c, str(names.get(c, ""))]
+    return {e for e, rx in UNIT_HINTS.items() if any(rx.search(t) for t in texts)}
 
 
 @dataclass
@@ -381,6 +419,7 @@ def headline_numbers(
 ) -> tuple[str, str]:
     pool = _candidates(table, intent)
     labels = _label_numbers(table)
+    declared = _declared_scales(table, intent)
     missing, matched = [], []
     for text in texts:
         consumed: list[tuple[int, int]] = []
@@ -424,8 +463,17 @@ def headline_numbers(
             named = _mentioned(text[lo:hi], table, intent)
             agg = bool(AGGREGATE.search(text[max(0, m.start() - 25) : m.start()]))
             hit = _match(value, decimals, is_pct, sign, pool, named, agg or not named)
+            exp = _scale(m)
+            if not hit and exp in declared:  # '212k' against a column in thousands
+                v, d = value / 10**exp, decimals + exp
+                hit = _match(v, d, is_pct, sign, pool, named, agg or not named)
             if hit:
                 matched.append(f"{token} = {hit.desc}")
+            elif exp:
+                missing.append(
+                    f"{token} (= {value:,.0f}; if the data is in "
+                    f"{_UNIT_WORDS[exp]}, say so in units or names)"
+                )
             else:
                 missing.append(token)
     if missing:

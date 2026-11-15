@@ -261,6 +261,7 @@ tables or Mermaid.
 | A change in the direction the text says: "fell 3%" needs a fall, "−18%" a negative change | |
 | When a clause names a row ("Riverside", "Q2 '26"), only that row's figures, or an aggregate introduced by a word like median, mean, total or overall | Another row's figure ("Central's wait is 48" when 48 is Riverside's) |
 | Each measure's share of its row total, on multi-series line and bar charts ("E-book is 43% of loans") | Multiples ("8 times"): state both values instead |
+| Scaled numbers ("212k", "1.2M", "3bn", "4 million"), within their rounding ("212k" is 211,500 to 212,500). Against data stored in thousands, millions or billions only when the column name (`visits_k`), its `names` label ("Visits (k)") or `units` says so | Lowercase m ("15m" is a label, not 15 million) |
 | | Changes between rows of an unordered table |
 | Distributions (histograms, large tables): a share with a threshold in one clause ("82% within 15 minutes", "half within 7.8", "1 in 10 above 18.9"); a bare threshold with no share ("30 minutes or more") inside the data's range | |
 

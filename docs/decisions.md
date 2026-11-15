@@ -211,6 +211,10 @@ statistics; shares only on bars and tables; changes along a series or against
 share-and-threshold pair. When a clause names a row, only that row's figures
 (or an introduced aggregate) match; multiples fail. Every pass lists what each
 number matched.
+Scaled numbers ("212k", "1.2M", "3bn") count, within their rounding, and
+match data stored in that unit only when the measure declares it (column name,
+`names` or `units`); until 2026-11-14 they were skipped, so any value passed
+(tour, C7).
 **Alternatives:** every value and pairwise change (rejected: an independent
 tester got "fell 22%", "fell 3%" for a rise and "half within 12" past it).
 **Cost:** some true but unusual phrasings fail and need rewording; the row limit

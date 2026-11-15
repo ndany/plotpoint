@@ -271,6 +271,70 @@ def test_entity_aware_matching(text, table, intent, status) -> None:
     assert got == status, detail
 
 
+RAW_VISITS = data.load(
+    {"inline": "branch,visits\nCentral,212340\nEastgate,1234567\nNorth,3040000000\n"},
+    FIXTURE,
+)
+RAW_BAR = {"visual_type": "bar", "fields": {"x": "branch", "y": "visits"}}
+IN_K = data.load({"inline": "branch,visits\nCentral,212\nEastgate,96\n"}, FIXTURE)
+K_BAR = {"visual_type": "bar", "fields": {"x": "branch", "y": "visits"}}
+
+
+@pytest.mark.parametrize(
+    ("text", "table", "intent", "status"),
+    [  # the tour (2026-11-14): '212k' was skipped, so any value passed
+        ("Central has 212k visits", RAW_VISITS, RAW_BAR, "pass"),  # 212,340
+        ("Central has 213k visits", RAW_VISITS, RAW_BAR, "fail"),
+        ("Eastgate has 1.2M visits", RAW_VISITS, RAW_BAR, "pass"),
+        ("Eastgate has 1.3M visits", RAW_VISITS, RAW_BAR, "fail"),
+        ("North has 3bn visits", RAW_VISITS, RAW_BAR, "pass"),
+        ("North has 3 bn visits", RAW_VISITS, RAW_BAR, "pass"),
+        ("North has 3B visits", RAW_VISITS, RAW_BAR, "pass"),
+        ("North has 4bn visits", RAW_VISITS, RAW_BAR, "fail"),
+        ("Eastgate has 1.2 million visits", RAW_VISITS, RAW_BAR, "pass"),
+        ("Central has 212 thousand visits", RAW_VISITS, RAW_BAR, "pass"),
+        # data stored in thousands: the column, names or units must say so
+        ("Central has 212k visits", OVERVIEW, TABLE, "pass"),  # visits_k
+        ("Central has 300k visits", OVERVIEW, TABLE, "fail"),
+        ("Central has 212k visits", IN_K, K_BAR, "fail"),  # unit not declared
+        (
+            "Central has 212k visits",
+            IN_K,
+            {**K_BAR, "fields": {**K_BAR["fields"], "names": {"visits": "Visits (k)"}}},
+            "pass",
+        ),
+        (
+            "Central has 212k visits",
+            IN_K,
+            {**K_BAR, "units": "Visits (thousands)"},
+            "pass",
+        ),
+    ],
+)
+def test_suffixed_numbers_are_checked(text, table, intent, status) -> None:
+    got, detail = checks.headline_numbers([text], table, intent)
+    assert got == status, detail
+
+
+def test_suffix_failure_says_how_to_declare_the_unit() -> None:
+    got, detail = checks.headline_numbers(["Central has 212k visits"], IN_K, K_BAR)
+    assert got == "fail"
+    assert "212k (= 212,000; if the data is in thousands" in detail
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("212k", [(212000.0, -3, False, "212k")]),
+        ("1.2M", [(1200000.0, -5, False, "1.2M")]),
+        ("15m", []),  # lowercase m: minutes or metres, not millions
+        ("Q3", []),
+    ],
+)
+def test_numbers_in_scales_suffixes(text, expected) -> None:
+    assert checks.numbers_in(text) == expected
+
+
 def test_ratio_is_checked_with_its_threshold() -> None:
     waits = data.load({"path": "data/wait_minutes.csv"}, FIXTURE)
     hist = {"visual_type": "histogram", "fields": {"value": "wait_min"}}
