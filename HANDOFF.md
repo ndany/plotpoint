@@ -40,8 +40,10 @@
    something wrong or misleading without noticing, or breaks install, the tour
    or a supported platform (macOS and Windows). Plan first; each fix lands with
    tests in its own commit. Then re-run the affected try-it prompts in the
-   sandbox, do one try-it run on Windows, and only then the tour's cleanup
-   (section 6). Common thread: checks report `pass` on wrong output. Save the
+   sandbox (automated: headless sessions with the blind brief), then the
+   maintainer verifies on Windows with real use cases once the fixes are pushed
+   (that machine can't reach this one), fixes from that feedback, and only then
+   the tour's cleanup (section 6). Common thread: checks report `pass` on wrong output. Save the
    re-runs as recorded runs (`tests/fixtures/library-review/runs/`, D-19, with
    the blind brief in `docs/testing.md`); they also cover the 2026-11-14 wording
    edits to `SKILL.md` and `spec.md`, which have no run of their own.
@@ -52,7 +54,7 @@
    | C2 | Slide PNGs render the same on macOS and Windows (they depend on locally installed fonts) | open |
    | C3 | Any edit to the caller's takeaway sets `headline_status: draft` (2 of 2 runs changed the wording and kept `confirmed`; one didn't say so) | open |
    | C4 | Dependency bootstrap for an installed skill. Decided 2026-11-14: `uv run` when uv is installed (PEP 723 metadata in `visualize.py`, kept identical to `requirements.txt` by a test); otherwise `visualize.py` checks its imports first and stops with the exact per-OS commands (`py` / `python3`, a venv in the user cache folder, PEP 668), and `SKILL.md` says to show that message to the user, never work around it | open |
-   | C5 | CI on `windows-latest` and `macos-latest` (with Dependabot's actions bumps, D-24), plus one manual try-it run on Windows | open |
+   | C5 | CI on `windows-latest` and `macos-latest` (with Dependabot's actions bumps, D-24), plus one manual try-it run on Windows. CI done 2026-11-14: pytest on macOS and Windows, Python 3.11 and 3.13; it found and fixed a crash printing non-ASCII output on Windows. The manual Windows run follows the pushed fixes | CI done; Windows run open |
    | C6 | `capacity` warns or fails when the folded "Other" bar outranks a shown or highlighted bar (it passed while contradicting the headline) | open |
    | C7 | `headline_numbers` reads suffixed numbers (`212k`, `1.2M`, `3bn`) as numbers (today they're skipped and any value passes) | open |
    | C8 | Investigate: a bare threshold passes if it's anywhere inside the data's range; promote to a fix if it lets a wrong number through | open |

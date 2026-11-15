@@ -3,6 +3,7 @@ fragments, and the command-line entry point."""
 
 from __future__ import annotations
 
+import os
 import re
 import shutil
 import struct
@@ -243,6 +244,7 @@ def test_cli_validate_profile_render(workdir: Path) -> None:
         cwd=workdir,
         capture_output=True,
         text=True,
+        encoding="utf-8",
         check=False,
     )
     assert ok.returncode == 0, ok.stderr
@@ -251,6 +253,7 @@ def test_cli_validate_profile_render(workdir: Path) -> None:
         cwd=workdir,
         capture_output=True,
         text=True,
+        encoding="utf-8",
         check=False,
     )
     assert prof.returncode == 0 and "dataset: branch_waits" in prof.stdout
@@ -259,6 +262,7 @@ def test_cli_validate_profile_render(workdir: Path) -> None:
         cwd=workdir,
         capture_output=True,
         text=True,
+        encoding="utf-8",
         check=False,
     )
     assert bad.returncode == 1
@@ -387,6 +391,7 @@ def test_check_plan_dry_runs_the_reference_storyboard(workdir: Path) -> None:
         ],
         capture_output=True,
         text=True,
+        encoding="utf-8",
         check=False,
     )
     assert proc.returncode == 0, proc.stderr
@@ -416,10 +421,31 @@ def test_profile_accepts_a_render_request_with_inline_data(workdir: Path) -> Non
         [sys.executable, str(SCRIPTS / "visualize.py"), "profile", str(req)],
         capture_output=True,
         text=True,
+        encoding="utf-8",
         check=False,
     )
     assert proc.returncode == 0, proc.stderr
     assert "48210" in proc.stdout and "&id" not in proc.stdout
+
+
+def test_cli_writes_utf8_on_a_legacy_code_page(workdir: Path) -> None:
+    """Windows consoles and pipes default to cp1252, which can't encode the
+    output's non-ASCII text (the 2026-11-14 Windows CI run crashed on '→')."""
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(SCRIPTS / "visualize.py"),
+            "check-plan",
+            "storyboard-request.yaml",
+            "storyboard-golden.yaml",
+        ],
+        cwd=workdir,
+        capture_output=True,
+        env={**os.environ, "PYTHONIOENCODING": "cp1252"},
+        check=False,
+    )
+    assert proc.returncode == 0, proc.stderr.decode("utf-8", "replace")
+    assert "→" in proc.stdout.decode("utf-8")
 
 
 def test_text_outputs_skip_legibility(rendered: dict) -> None:

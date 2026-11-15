@@ -102,6 +102,11 @@ def cmd_validate(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    # Output holds non-ASCII text (→, –, names); Windows consoles and pipes default
+    # to a legacy code page that can't encode it.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(
         prog="visualize.py",
         description=__doc__,

@@ -5,8 +5,17 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
+import sys
 import zipfile
 from pathlib import Path
+
+import pytest
+
+# The dev scripts are bash, run on macOS and Linux (CI runs them on ubuntu). On
+# Windows runners `bash` can resolve to WSL rather than Git Bash.
+pytestmark = pytest.mark.skipif(
+    sys.platform == "win32", reason="bash dev scripts run on macOS and Linux only"
+)
 
 REPO = Path(__file__).resolve().parent.parent
 PRIVACY = REPO / "scripts" / "check-privacy.sh"

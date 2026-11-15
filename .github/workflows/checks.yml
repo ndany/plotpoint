@@ -2,7 +2,8 @@ name: Checks
 
 # Runs scripts/check-all.sh, the same gate set used locally, on every push to
 # main and every PR. Tool versions are pinned in requirements-dev.txt,
-# package.json and below, so CI can't drift from local runs.
+# package.json and below, so CI can't drift from local runs. The engine job runs
+# pytest on macOS and Windows, the other supported platforms.
 
 on:
   push:
@@ -21,15 +22,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.13"
 
       - name: Set up Node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v7
         with:
           node-version: "22"
 
@@ -46,3 +47,27 @@ jobs:
 
       - name: Run all gates
         run: scripts/check-all.sh
+
+  engine:
+    name: pytest (${{ matrix.os }}, Python ${{ matrix.python }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+        # Oldest supported (SKILL.md: 3.11+) and the version the checks job uses.
+        python: ["3.11", "3.13"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install Python dev tools (pinned)
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Run pytest
+        run: python -m pytest -q -rs

@@ -1,7 +1,9 @@
 # Testing
 
 How plotpoint is tested, what each kind of test proves, and how to add tests.
-Run everything with `scripts/check-all.sh` (CI runs the same script).
+Run everything with `scripts/check-all.sh` (CI runs the same script on
+ubuntu, and pytest alone on macOS and Windows with Python 3.11 and 3.13; the
+bash dev-script tests skip on Windows).
 
 ## The fixture
 
@@ -40,7 +42,7 @@ storyboard must **order**, **merge**, **demote**, **cut**, place by
 
 | Kind | What | Runs |
 | --- | --- | --- |
-| Deterministic | Engine output, schemas, checks, sizes, colors | `pytest`, every commit and CI |
+| Deterministic | Engine output, schemas, checks, sizes, colors | `pytest`, every commit and CI (ubuntu, macOS, Windows) |
 | Render validity | Mermaid parses and renders | `pytest` with the Mermaid CLI; skipped with a notice where it's missing |
 | Model behavior | Storyboard and mode C decisions | Recorded runs (below); not in CI |
 | Visual review | Clipping, overlap, legibility, whether the claim is visible | By looking at rendered output; findings in the skill's `DESIGN.md` |
