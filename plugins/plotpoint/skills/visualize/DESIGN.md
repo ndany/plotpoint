@@ -89,7 +89,7 @@ rounding and invented values, but passed 8 wrong ones. Re-run after the fixes
 | "1 in 10 ... more than 25" passed: share and threshold checked apart | Ratios pair with their threshold like percents |
 | A true share on a line chart ("E-book is 43% of loans") couldn't pass | Each measure's share of its row total counts on multi-series charts |
 | Details named scatter points by x value | Details name the row (branch, quarter) |
-| Render printed ~15 KB of SVG | `render --checks-only` |
+| Render printed ~15 KB of SVG | `render --quiet` (first named `--checks-only`) |
 | The number tile used the accent color for text | Ink, like all text |
 | Histogram y title fixed at "Count"; `bins` unmentioned | `names: {count: ...}`; bins in render step 2 |
 | Profile said `string`; skew flagged on 5-point series | `text`, as documented; skew needs at least 8 values |

@@ -365,3 +365,16 @@ mark (the exit code and `result.json` report it). Contrast was computed by hand:
 dataviz's `validate_palette.py` wasn't available here.
 **Revisit:** if callers need marks they can switch off (e.g. internal review
 copies), or the theme changes (re-validate with `validate_palette.py`).
+
+## D-31: `--checks-only` renamed `--quiet`, with no alias
+
+**Chosen:** `render --quiet` writes every file but prints only checks and notes.
+The old name is gone; `spec.md`, "Render flags", explains every flag in one
+place, and the CLI help and `SKILL.md` point there.
+**Alternatives:** keep `--checks-only` as a hidden alias (the misleading name
+survives in old scripts and recorded runs, and keeps being copied).
+**Rationale:** the old name said "check only" while the command wrote files; the
+tour misread it. Version 0.1 has no outside users to break.
+**Cost:** recorded runs quote the old name verbatim and aren't edited, so they
+no longer run as written.
+**Revisit:** never for the alias; rename again only if `--quiet` is misread.

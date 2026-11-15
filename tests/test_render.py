@@ -717,3 +717,49 @@ def test_draft_and_failed_marks_combine(workdir: Path) -> None:
     res = render.render(req, workdir)
     snippet = res["outputs"]["md/document"]["snippet"]
     assert DRAFT_MARK in snippet and FAIL_MARK in snippet
+
+
+# --- render flags (C10) ----------------------------------------------------------
+
+
+def _cli_render(work: Path, *flags: str) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        [sys.executable, str(SCRIPTS / "visualize.py"), "render", *flags],
+        cwd=work / "requests",
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=False,
+    )
+
+
+def test_quiet_writes_every_file_and_prints_only_checks_and_notes(
+    workdir: Path,
+) -> None:
+    out = _cli_render(workdir, "--quiet", "v1-line.yaml")
+    assert out.returncode == 0, out.stderr
+    printed = docio.yaml.safe_load(out.stdout)
+    assert set(printed) == {"id", "checks", "notes"}
+    written = {p.name for p in (workdir / "requests/out/v1").iterdir()}
+    assert {"v1-md-document.md", "v1-image-slide.png", "v1.result.json"} <= written
+    assert "snippet" not in out.stdout
+
+
+def test_normal_render_prints_the_whole_result(workdir: Path) -> None:
+    out = _cli_render(workdir, "v1-line.yaml")
+    assert "outputs" in docio.yaml.safe_load(out.stdout)
+
+
+def test_old_checks_only_flag_is_rejected(workdir: Path) -> None:
+    out = _cli_render(workdir, "--checks-only", "v1-line.yaml")
+    assert out.returncode == 2 and "unrecognized arguments" in out.stderr
+    assert not (workdir / "requests/out").exists()
+
+
+def test_tour_requests_work_without_the_answer_files(workdir: Path) -> None:
+    """try-it.md's sandbox copy leaves the answer key out; the tour must not need it."""
+    for name in ("storyboard-golden.yaml", "expected.md", "render-data.yaml"):
+        (workdir / name).unlink()
+    for name in ("v1-line", "v3-scatter", "v2-number"):
+        out = _cli_render(workdir, "--quiet", f"{name}.yaml")
+        assert out.returncode == 0, (name, out.stderr)

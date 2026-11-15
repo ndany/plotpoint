@@ -14,8 +14,8 @@ Usage (paths in a request resolve relative to the request file's folder):
                                        or the data of a render request
   visualize.py profile --data FILE     profile one data file (csv, tsv, json, jsonl)
   visualize.py render REQUEST.yaml     render one visual; prints the result
-  visualize.py render --dry-run REQ    run the checks only; writes no files
-  visualize.py render --checks-only R  render, but print only checks and notes
+                                       (flags --dry-run, --quiet: references/spec.md,
+                                       "Render flags")
   visualize.py check-plan REQ RESULT   dry-run every visual in a storyboard result
   visualize.py validate KIND FILE      KIND: storyboardRequest, storyboardResult,
                                        renderRequest or renderResult
@@ -71,7 +71,7 @@ def cmd_profile(args: argparse.Namespace) -> int:
 def cmd_render(args: argparse.Namespace) -> int:
     req_path = Path(args.request)
     result = render.render(_load(req_path), req_path.parent, dry_run=args.dry_run)
-    if args.checks_only:  # the full result is in <out_dir>/<id>.result.json
+    if args.quiet:  # the full result is in <out_dir>/<id>.result.json
         _dump(
             {"id": result["id"], "checks": result["checks"], "notes": result["notes"]}
         )
@@ -133,10 +133,8 @@ def main(argv: list[str] | None = None) -> int:
     p.set_defaults(func=cmd_profile)
     r = sub.add_parser("render")
     r.add_argument("request")
-    r.add_argument("--dry-run", action="store_true", help="checks only")
-    r.add_argument(
-        "--checks-only", action="store_true", help="print only checks and notes"
-    )
+    r.add_argument("--dry-run", action="store_true", help="see spec.md, Render flags")
+    r.add_argument("--quiet", action="store_true", help="see spec.md, Render flags")
     r.set_defaults(func=cmd_render)
     c = sub.add_parser("check-plan")
     c.add_argument("request")

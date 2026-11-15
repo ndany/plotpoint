@@ -203,10 +203,22 @@ A render request has no `data_note` (validation rejects it). When `data` is a
 table you built, record how in a YAML comment above `data`, or keep the
 storyboard's `data_note` with your write-up.
 
-Add `--dry-run` (`visualize.py render --dry-run request.yaml`) to run every
-check without writing files; text outputs (tables, numbers, sentences) are
-still returned. `--checks-only` is different: it renders and writes every file,
-and prints only the checks and notes. For a whole storyboard, `visualize.py check-plan request.yaml
+### Render flags
+
+| Flag | Draws and writes files | Prints |
+| --- | --- | --- |
+| (none) | Yes | The whole result (about 15 KB with SVG snippets) |
+| `--dry-run` | No: checks only | The whole result; text outputs (tables, numbers, sentences) are still returned |
+| `--quiet` | Yes, exactly as a normal run | Only the checks and notes; the full result is in `<out_dir>/<id>.result.json` |
+
+Why each exists: no flag is the normal run. `--dry-run` checks a plan or a
+headline before drawing, as `check-plan` does for a whole storyboard. `--quiet`
+keeps the printed result short, since in a Claude session the checks are what
+you act on; it changes only what is printed, never what is written.
+
+Both flags exit 1 when any check fails. The old name `--checks-only` was
+removed, not aliased: it read as "check only", but it writes files. For a whole
+storyboard, `visualize.py check-plan request.yaml
 result.yaml` builds a request per visual (its `data`, else its first dataset;
 sources joined; latest as-of) and dry-runs them all.
 
