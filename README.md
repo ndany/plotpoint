@@ -33,7 +33,7 @@ headlines written without your takeaway are marked as drafts.
 | Input | Output |
 | --- | --- |
 | Questions, audiences and datasets (CSV, TSV, JSON, JSONL or inline), optionally your draft | An ordered storyboard: each visual's intent, placement (summary, body, appendix), the technique per format, recommendations, a color map |
-| One dataset plus a question or a planned intent | SVG, PNG, Mermaid, tables or HTML fragments per format, with a ready-to-paste snippet and check results |
+| One dataset plus a question or a planned intent | A file per format (a Markdown document, an HTML fragment or a slide PNG; SVG, Mermaid or Vega-Lite files as by-products), with a ready-to-paste snippet and check results |
 
 Formats: Markdown (SVG image, Mermaid or table), HTML fragments (inline SVG or
 interactive), HTML slide canvases, and slide images (PNG 3840 × 2160).

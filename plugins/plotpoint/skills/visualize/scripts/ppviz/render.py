@@ -9,6 +9,7 @@ from __future__ import annotations
 import html
 import json
 import tempfile
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -246,7 +247,9 @@ def render(
     result["notes"] += capacity_notes
     if scratch:  # keep text outputs (no files) so they can be read
         result["outputs"] = {
-            t: o for t, o in result["outputs"].items() if not o["files"]
+            t: o
+            for t, o in result["outputs"].items()
+            if o["technique"] in ("text", "table")
         }
         result["notes"].append("Dry run: checks only, no files written.")
         scratch.cleanup()
@@ -341,15 +344,35 @@ def _render_target(
         return entry
 
     is_md = target.startswith("md/")
-    if vt == "sentence":
-        body = headline
-        entry["snippet"] = (
-            output.md_snippet(headline, "", notes, source, as_of, draft)
-            if is_md
-            else output.html_figure(
-                visual_id, headline, "", notes, source, as_of, lay, draft
+
+    def md_deliver(body_for: Callable[[str], str], md_notes: list[str]) -> None:
+        """Set the pasteable snippet (links relative to the caller's document) and
+        write the deliverable <stem>.md (links relative to its own folder)."""
+
+        def make(prefix: str) -> str:
+            return output.md_snippet(
+                headline, body_for(prefix), md_notes, source, as_of, draft
             )
-        )
+
+        entry["snippet"] = make(f"{out_rel}/")
+        (out_dir / f"{stem}.md").write_text(make(""), encoding="utf-8")
+        entry["files"].append(f"{out_rel}/{stem}.md")
+
+    def html_deliver(snippet: str) -> None:
+        """Set the snippet and write it as the deliverable <stem>.html fragment."""
+        entry["snippet"] = snippet
+        (out_dir / f"{stem}.html").write_text(snippet + "\n", encoding="utf-8")
+        entry["files"].append(f"{out_rel}/{stem}.html")
+
+    if vt == "sentence":
+        if is_md:
+            md_deliver(lambda _: "", notes)
+        else:
+            html_deliver(
+                output.html_figure(
+                    visual_id, headline, "", notes, source, as_of, lay, draft
+                )
+            )
         return entry
     if vt == "number":
         p = tables.number_parts(table, intent)
@@ -357,9 +380,7 @@ def _render_target(
             body = f"**{p['value']}** {p['label']}" + (
                 f" ({p['change']})" if p["change"] else ""
             )
-            entry["snippet"] = output.md_snippet(
-                headline, body, notes, source, as_of, draft
-            )
+            md_deliver(lambda _: body, notes)
         else:
             ink = config.theme()["ink"]["primary"]  # text is ink, never a hue
             body = (
@@ -371,30 +392,27 @@ def _render_target(
                 + (f" · {p['change']}" if p["change"] else "")
                 + "</div>"
             )
-            entry["snippet"] = output.html_figure(
-                visual_id, headline, body, notes, source, as_of, lay, draft
+            html_deliver(
+                output.html_figure(
+                    visual_id, headline, body, notes, source, as_of, lay, draft
+                )
             )
         return entry
     if vt == "table" or technique == "table":
         if is_md:
-            entry["snippet"] = output.md_snippet(
-                headline,
-                tables.markdown_table(table, intent),
-                notes,
-                source,
-                as_of,
-                draft,
-            )
+            md_deliver(lambda _: tables.markdown_table(table, intent), notes)
         else:
-            entry["snippet"] = output.html_figure(
-                visual_id,
-                headline,
-                tables.html_table(table, intent, lay.sizes["label"]),
-                notes,
-                source,
-                as_of,
-                lay,
-                draft,
+            html_deliver(
+                output.html_figure(
+                    visual_id,
+                    headline,
+                    tables.html_table(table, intent, lay.sizes["label"]),
+                    notes,
+                    source,
+                    as_of,
+                    lay,
+                    draft,
+                )
             )
         return entry
 
@@ -430,9 +448,7 @@ def _render_target(
             body += "\n\n" + tables.markdown_table(table, intent)
         (out_dir / f"{stem}.mmd").write_text(code + "\n", encoding="utf-8")
         entry["files"] = [f"{out_rel}/{stem}.mmd"]
-        entry["snippet"] = output.md_snippet(
-            headline, body, mm_notes, source, as_of, draft
-        )
+        md_deliver(lambda _: body, mm_notes)
         status, detail = mermaid.validate(code)
         entry["_status"] = status if status == "pass" else f"{status} ({detail})"
         return entry
@@ -440,19 +456,18 @@ def _render_target(
     spec = _chart_spec(shaped, intent, cmap, lay, transparent=True)
     if technique == "vega":
         body = output.vega_embed(visual_id, spec)
-        entry["snippet"] = output.html_figure(
-            visual_id, headline, body, notes, source, as_of, lay, draft
-        )
-        entry["snippet"] = (
-            "<!-- plotpoint: interactive chart; include once in the page <head>:\n"
-            + output.VEGA_PAGE_INCLUDE
-            + "\n-->\n"
-            + entry["snippet"]
-        )
         (out_dir / f"{stem}.vl.json").write_text(
             json.dumps(spec, indent=2), encoding="utf-8"
         )
         entry["files"] = [f"{out_rel}/{stem}.vl.json"]
+        html_deliver(
+            "<!-- plotpoint: interactive chart; include once in the page <head>:\n"
+            + output.VEGA_PAGE_INCLUDE
+            + "\n-->\n"
+            + output.html_figure(
+                visual_id, headline, body, notes, source, as_of, lay, draft
+            )
+        )
         return entry
 
     svg = vlc.vegalite_to_svg(json.dumps(spec))
@@ -460,18 +475,19 @@ def _render_target(
     svg_path.write_text(svg, encoding="utf-8")
     entry["files"] = [f"{out_rel}/{svg_path.name}"]
     if is_md:
-        body = f"![{headline}]({out_rel}/{svg_path.name})"
-        if request.get("md_table"):
-            body += "\n\n" + tables.markdown_table(table, intent)
-        entry["snippet"] = output.md_snippet(
-            headline, body, notes, source, as_of, draft
+        extra = (
+            "\n\n" + tables.markdown_table(table, intent)
+            if request.get("md_table")
+            else ""
+        )
+        md_deliver(
+            lambda prefix: f"![{headline}]({prefix}{svg_path.name}){extra}", notes
         )
     else:
         body = output.inline_svg(svg, visual_id, headline, lay.width)
-        entry["snippet"] = output.html_figure(
-            visual_id, headline, body, notes, source, as_of, lay, draft
+        html_deliver(
+            output.html_figure(
+                visual_id, headline, body, notes, source, as_of, lay, draft
+            )
         )
-        frag = out_dir / f"{stem}.html"
-        frag.write_text(entry["snippet"] + "\n", encoding="utf-8")
-        entry["files"].append(f"{out_rel}/{frag.name}")
     return entry

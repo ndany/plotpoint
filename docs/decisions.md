@@ -327,3 +327,17 @@ for slides. Any vl-convert or font update changes the hashes; refresh them after
 looking (`docs/testing.md`, "Platform checks").
 **Revisit:** if vl-convert measures registered fonts the same on every platform
 (drop `slide_measure_font`), can disable system fonts, or the font changes.
+
+## D-29: Every document format writes a deliverable file
+
+**Chosen:** each target writes one file meant to be published or pasted:
+`<id>-md-document.md` (image links relative to its own folder), an `.html`
+fragment for every HTML technique (SVG, interactive, table, text), and the
+slide PNG. The other files (`.svg`, `.mmd`, `.vl.json`) are by-products.
+`spec.md` lists both per target.
+**Alternatives:** write a file for Markdown only, as the tour finding asked
+(interactive, table and text HTML would still exist only as a snippet in
+`result.json`).
+**Rationale:** one rule with no exceptions: every format gives you a file to open.
+**Cost:** one more small file per HTML target.
+**Revisit:** if callers only ever use the snippet.

@@ -80,7 +80,7 @@ render request
   ├─ profile       stats, outlier flags, extreme rows
   ├─ shape         per target: plotted rows, exclusions, capacity
   ├─ draw          Vega-Lite, Mermaid, table or text
-  ├─ package       file, snippet, HTML fragment, slide
+  ├─ package       deliverable file (.md, .html, .png) and snippet
   ├─ check         headline numbers, outliers, callouts,
   │                legibility, capacity, render
   ▼

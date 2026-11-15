@@ -221,7 +221,7 @@ intent: {...}
 outputs:
   md/document:
     technique: svg
-    files: [figures/v1/v1-md-document.svg]
+    files: [figures/v1/v1-md-document.svg, figures/v1/v1-md-document.md]
     snippet: "**Headline**\n\n![Headline](figures/v1/v1-md-document.svg)\n\n<sub>Source: ...</sub>"
   html/document:
     technique: svg
@@ -241,6 +241,21 @@ Statuses: `pass`, `warn`, `fail`, `skip`. Fix every `fail` before delivering.
 The result is also written to `<out_dir>/<id>.result.json`. `width` and
 `height` are reported only for drawn outputs (SVG, PNG, Vega), not text,
 tables or Mermaid.
+
+**Files: the deliverable and its by-products.** Each target writes one
+*deliverable*: the file a person publishes or pastes. Anything else listed in
+`files` is a *by-product*: a part of the deliverable, kept for reuse.
+
+| Target | Deliverable | By-product |
+| --- | --- | --- |
+| `md/document` | `<id>-md-document.md`: headline, chart or table, notes, source line | `.svg` (technique `svg`): the chart image the `.md` links to, with no headline or source. `.mmd` (technique `mermaid`): the Mermaid code, already inside the `.md` |
+| `html/document`, `html/slide` | `<id>-<target>.html`: a `<figure>` fragment, not a page | `.svg` (technique `svg`): the chart alone, already inline in the fragment. `.vl.json` (technique `vega`): the Vega-Lite spec, already embedded |
+| `image/slide` | `<id>-image-slide.png` (3840 × 2160) | `.svg`: the same slide as vector |
+
+Keep the deliverable and the files it links to together. Image links in the
+`.md` file resolve from the file's own folder (`![..](v1-md-document.svg)`). The
+result's `snippet` is the same text for pasting into *your* document, so its
+links resolve from the request's folder (`figures/v1/v1-md-document.svg`).
 
 | Check | Fails when |
 | --- | --- |

@@ -46,7 +46,10 @@ renderer test Mermaid output.
    storyboard's `color_map`. Ask plotpoint to render it.
 5. **Assemble:** drop each target's `snippet` into your document: Markdown into
    the `.md`, the `<figure>` fragment into your HTML page. Keep the files in
-   `out_dir` next to the document.
+   `out_dir` next to the document. Each target also writes its deliverable as a
+   file (`<id>-md-document.md`, `<id>-html-document.html`, the slide `.png`);
+   the `.svg`, `.mmd` and `.vl.json` files are by-products
+   (`references/spec.md`, "Files").
 
 ## Converting Markdown to HTML
 
@@ -82,7 +85,7 @@ out_dir: figures/v1
 python <skill-folder>/scripts/visualize.py render figures/v1.yaml
 ```
 
-The result lists each target's files and snippet, plus check results. Fix any
+The result lists each target's files (its deliverable and by-products) and snippet, plus check results. Fix any
 `fail` before using the output. `render --dry-run` runs the checks without
 writing anything. A worked example with rendered output is in
 [`docs/examples/library-review/`](../examples/library-review/).

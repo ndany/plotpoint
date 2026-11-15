@@ -83,23 +83,25 @@ $VIZ render --checks-only requests/v1-line.yaml
 `--checks-only` still writes every file; it only shortens what's printed. To
 run the checks without writing anything, use `--dry-run`.
 
-Then look at `requests/out/v1/`:
+Then look at `requests/out/v1/`. Each format writes one **deliverable**, the
+file you'd publish or paste; the other files are **by-products** (parts of a
+deliverable, kept for reuse). The full list is in `spec.md`, "Files".
 
-| File | Format |
-| --- | --- |
-| `v1-image-slide.png` | Slide image (3840 × 2160) to paste into PowerPoint or Keynote |
-| `v1-html-document.html` | The HTML fragment (`<figure>` with an inline SVG) to paste into a page |
-| `v1-html-slide.html` | A 1440 × 810 slide for an HTML deck |
-| `v1-md-document.mmd` | The Mermaid chart behind the Markdown output |
-| `v1.result.json` | Everything: snippets, files, sizes and checks |
+| File | Format | Deliverable or by-product |
+| --- | --- | --- |
+| `v1-md-document.md` | Markdown: headline, chart, notes, source. Open it in VS Code's preview | Deliverable |
+| `v1-md-document.mmd` | The Mermaid chart inside that `.md` | By-product (chart only) |
+| `v1-html-document.html` | The HTML fragment (`<figure>` with an inline SVG) to paste into a page | Deliverable |
+| `v1-html-document.svg` | The chart alone, already inline in the fragment | By-product (chart only) |
+| `v1-html-slide.html` | A 1440 × 810 slide for an HTML deck | Deliverable |
+| `v1-image-slide.png` | Slide image (3840 × 2160) to paste into PowerPoint or Keynote | Deliverable |
+| `v1-image-slide.svg` | The same slide as vector | By-product |
+| `v1.result.json` | Everything: snippets, files, sizes and checks | The report |
 
-To preview the Markdown output in VS Code, write the snippet to a file next to
-the request and open its preview:
-
-```bash
-python -c "import json,sys; print(json.load(open(sys.argv[1]))['outputs']['md/document']['snippet'])" \
-  requests/out/v1/v1.result.json > requests/v1-preview.md
-```
+With `technique: svg` the Markdown deliverable links its chart image
+(`v1-md-document.svg`) from its own folder, so keep the two together. The
+`snippet` in `v1.result.json` holds the same text with links relative to the
+request's folder, for pasting into a document of yours.
 
 Read the checks in `v1.result.json`. `headline_numbers` lists what each number
 in the headline matched, for example that 18% is the change in total loans from

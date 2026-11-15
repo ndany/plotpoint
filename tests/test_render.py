@@ -567,3 +567,51 @@ def test_slide_png_is_identical_on_every_platform(workdir: Path) -> None:
         f"slides drawn differently: {changed}. Look at them, then store the new "
         "hashes (docs/testing.md, Slide pixel hashes)"
     )
+
+
+# --- deliverable files (C12): every document target writes a file ----------------
+
+LINK = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
+
+
+def test_every_document_target_writes_its_deliverable(rendered: dict) -> None:
+    work = rendered["_work"]
+    for vid, res in rendered.items():
+        if vid.startswith("_"):
+            continue
+        for target, out in res["outputs"].items():
+            if target == "image/slide":
+                continue
+            ext = ".md" if target.startswith("md/") else ".html"
+            name = f"figures/{vid}/{vid}-{target.replace('/', '-')}{ext}"
+            assert name in out["files"], (vid, target, out["files"])
+            assert (work / name).is_file()
+
+
+def test_md_deliverable_links_resolve_from_its_own_folder(workdir: Path) -> None:
+    gold = docio.load(workdir / "storyboard-golden.yaml")
+    v1 = next(v for v in gold["visuals"] if v["id"] == "v1")
+    req = _request(workdir, v1, ["md/document"], gold["color_map"])
+    req["technique"] = {"md/document": "svg"}  # a picture, so the file has a link
+    res = render.render(req, workdir)
+    out = res["outputs"]["md/document"]
+    md_file = workdir / "figures/v1/v1-md-document.md"
+    links = LINK.findall(md_file.read_text(encoding="utf-8"))
+    assert links == ["v1-md-document.svg"]
+    assert all((md_file.parent / link).is_file() for link in links)
+    # the snippet is for pasting into the caller's document: relative to the request
+    assert LINK.findall(out["snippet"]) == ["figures/v1/v1-md-document.svg"]
+    assert all((workdir / link).is_file() for link in LINK.findall(out["snippet"]))
+    assert md_file.read_text(encoding="utf-8").count("**") >= 2  # headline present
+
+
+def test_text_outputs_in_dry_run_still_come_back(workdir: Path) -> None:
+    gold = docio.load(workdir / "storyboard-golden.yaml")
+    v2 = next(v for v in gold["visuals"] if v["id"] == "v2")
+    res = render.render(
+        _request(workdir, v2, ["md/document", "html/document"], gold["color_map"]),
+        workdir,
+        dry_run=True,
+    )
+    assert set(res["outputs"]) == {"md/document", "html/document"}
+    assert not (workdir / "figures/v2").exists()
