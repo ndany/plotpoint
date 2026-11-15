@@ -141,7 +141,7 @@ def test_inline_svg_prefixes_ids_and_references() -> None:
 def test_draft_headlines_are_flagged(rendered: dict) -> None:
     v5 = rendered["v5"]
     assert any("draft" in n.lower() for n in v5["notes"])
-    assert "draft headline" in v5["outputs"]["md/document"]["snippet"]
+    assert "DRAFT — headline not confirmed" in v5["outputs"]["md/document"]["snippet"]
 
 
 def test_table_as_slide_image_is_refused_clearly(workdir: Path) -> None:
@@ -615,3 +615,105 @@ def test_text_outputs_in_dry_run_still_come_back(workdir: Path) -> None:
     )
     assert set(res["outputs"]) == {"md/document", "html/document"}
     assert not (workdir / "figures/v2").exists()
+
+
+# --- status marks (C1): draft and failed renders can't pass as finished ----------
+
+DRAFT_MARK = "DRAFT — headline not confirmed"
+FAIL_MARK = "CHECKS FAILED: headline_numbers"
+ALL_FORMATS = ["md/document", "html/document", "html/slide", "image/slide"]
+
+
+def _status_render(work: Path, state: str, md_technique: str, vid: str) -> dict:
+    gold = docio.load(work / "storyboard-golden.yaml")
+    v = next(v for v in gold["visuals"] if v["id"] == "v1")
+    req = _request(work, v, ALL_FORMATS, gold["color_map"])
+    req["id"] = vid
+    req["technique"] = {"md/document": md_technique}
+    req["intent"] = dict(req["intent"])
+    req["intent"]["headline_status"] = "draft" if state == "draft" else "confirmed"
+    if state == "failed":
+        req["intent"]["headline"] = "Total loans fell 22% during the Q2 renovation"
+    req["out_dir"] = f"figures/{vid}"
+    return render.render(req, work)
+
+
+def _marked_texts(work: Path, res: dict) -> dict[str, str]:
+    """Every file a reader could publish or copy on its own: the deliverables and
+    any chart picture (Mermaid source and Vega-Lite specs aren't pictures)."""
+    out = {}
+    for target, o in res["outputs"].items():
+        deliverables = [f for f in o["files"] if f.endswith((".md", ".html", ".svg"))]
+        assert deliverables, target
+        for f in deliverables:
+            out[f] = (work / f).read_text(encoding="utf-8")
+    return out
+
+
+@pytest.mark.parametrize("md_technique", ["svg", "mermaid"])
+@pytest.mark.parametrize(
+    ("state", "present", "absent"),
+    [
+        ("draft", [DRAFT_MARK], [FAIL_MARK]),
+        ("failed", [FAIL_MARK], [DRAFT_MARK]),
+        ("clean", [], [DRAFT_MARK, "CHECKS FAILED"]),
+    ],
+)
+def test_status_marks_in_every_deliverable(
+    workdir: Path, state: str, present: list[str], absent: list[str], md_technique: str
+) -> None:
+    res = _status_render(workdir, state, md_technique, f"s-{state}-{md_technique}")
+    texts = _marked_texts(workdir, res)
+    # md, html, html slide and slide svg, plus a chart picture for each HTML
+    # target and, when drawn as svg, for md
+    assert len(texts) == (7 if md_technique == "svg" else 6)
+    for name, text in texts.items():
+        for mark in present:
+            assert mark in text, (name, mark)
+        for mark in absent:
+            assert mark not in text, (name, mark)
+    snippets = " ".join(o["snippet"] for o in res["outputs"].values() if o["snippet"])
+    assert all(m in snippets for m in present)
+    assert not any(m in snippets for m in absent)
+    if state == "failed":  # files are still written, so people can look at them
+        assert res["checks"]["headline_numbers"]["status"] == "fail"
+
+
+def test_marked_slide_png_differs_from_clean(workdir: Path) -> None:
+    clean = _status_render(workdir, "clean", "svg", "p-clean")
+    draft = _status_render(workdir, "draft", "svg", "p-draft")
+    a = workdir / clean["outputs"]["image/slide"]["files"][0]
+    b = workdir / draft["outputs"]["image/slide"]["files"][0]
+    assert _pixel_hash(a) != _pixel_hash(b)  # same headline; only the bar differs
+
+
+def test_chart_picture_carries_the_mark(workdir: Path) -> None:
+    """The chart SVG is marked too, so a copied picture still says draft or
+    failed; the bar adds height and the chart sits below it."""
+    _status_render(workdir, "clean", "svg", "u-ok")
+    _status_render(workdir, "failed", "svg", "u-bad")
+    ok = (workdir / "figures/u-ok/u-ok-md-document.svg").read_text(encoding="utf-8")
+    bad = (workdir / "figures/u-bad/u-bad-md-document.svg").read_text(encoding="utf-8")
+    assert "CHECKS FAILED" not in ok and "DRAFT" not in ok
+    assert FAIL_MARK in bad
+    height = re.compile(r'<svg\b[^>]*?\sheight="([\d.]+)')
+    assert float(height.search(bad)[1]) > float(height.search(ok)[1])
+    render.vlc.svg_to_png(bad, scale=1)  # still a valid SVG
+    html_bad = (workdir / "figures/u-bad/u-bad-html-document.html").read_text(
+        encoding="utf-8"
+    )
+    assert html_bad.count(FAIL_MARK) == 2  # the page line and the picture's bar
+
+
+def test_draft_and_failed_marks_combine(workdir: Path) -> None:
+    gold = docio.load(workdir / "storyboard-golden.yaml")
+    v = next(v for v in gold["visuals"] if v["id"] == "v1")
+    req = _request(workdir, v, ["md/document"], gold["color_map"])
+    req["intent"] = {
+        **req["intent"],
+        "headline_status": "draft",
+        "headline": "Total loans fell 22%",
+    }
+    res = render.render(req, workdir)
+    snippet = res["outputs"]["md/document"]["snippet"]
+    assert DRAFT_MARK in snippet and FAIL_MARK in snippet

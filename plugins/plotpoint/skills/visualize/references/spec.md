@@ -257,6 +257,26 @@ Keep the deliverable and the files it links to together. Image links in the
 result's `snippet` is the same text for pasting into *your* document, so its
 links resolve from the request's folder (`figures/v1/v1-md-document.svg`).
 
+**Status marks.** A deliverable that isn't ready to publish says so, visibly,
+in the file itself (the result's `snippet` carries the same marks):
+
+| Mark | When | Where |
+| --- | --- | --- |
+| `DRAFT — headline not confirmed` | `headline_status: draft` | Above the headline |
+| `CHECKS FAILED: <check names>` | Any check with status `fail`, judged before drawing (`headline_numbers`, `outliers`, `callouts`, `legibility`); `render` joins the list when the Mermaid in a Markdown file doesn't parse | Above the headline |
+
+A Markdown file gets a bold blockquote line per mark, an HTML fragment a
+`<p class="pp-status" role="note">` line per mark, and a slide (`.png` and
+`.svg`) a colored bar across the top. A chart picture (the `.svg` beside a
+document) gets the same bar, so the mark stays with it if it's copied on its
+own; a document showing that picture therefore shows the mark twice. Colors
+come from `status` in `config/theme.yaml`. The files are still written, so you
+can look at them; they just can't be mistaken for finished work. A confirmed
+headline with every check passing has no mark. Mermaid (`.mmd`) and Vega-Lite
+(`.vl.json`) sources aren't pictures and carry no mark; the `.md` or `.html`
+that uses them does. A target that fails to draw writes no file, so it has
+nothing to mark; the exit code and `result.json` report the failure.
+
 | Check | Fails when |
 | --- | --- |
 | `headline_numbers` | A number in the headline or a callout isn't derivable from the plotted data. The detail lists what each number matched; read it. Rules below |

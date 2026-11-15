@@ -86,7 +86,8 @@ python <skill-folder>/scripts/visualize.py render figures/v1.yaml
 ```
 
 The result lists each target's files (its deliverable and by-products) and snippet, plus check results. Fix any
-`fail` before using the output. `render --dry-run` runs the checks without
+`fail` before using the output; a file rendered with a draft headline or a failed
+check carries a visible `DRAFT` or `CHECKS FAILED` mark until you fix that. `render --dry-run` runs the checks without
 writing anything. A worked example with rendered output is in
 [`docs/examples/library-review/`](../examples/library-review/).
 

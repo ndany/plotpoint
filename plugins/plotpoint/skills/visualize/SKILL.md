@@ -100,7 +100,8 @@ Specs and field meanings: `references/spec.md`. Validate anything you write:
    the snippet adds them. Check for clipped or overlapping labels, that every number in the
    headline is visible, and that the claim reads at a glance. Checks can't see
    layout.
-6. **Return** the snippets and files. Flag draft headlines and any
+6. **Return** the snippets and files. Files carry a visible DRAFT or CHECKS FAILED
+   mark when they aren't ready (`references/spec.md`, "Status marks"). Flag draft headlines and any
    compensation the caller should know about.
 
 ## Rules that always apply

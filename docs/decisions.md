@@ -341,3 +341,27 @@ slide PNG. The other files (`.svg`, `.mmd`, `.vl.json`) are by-products.
 **Rationale:** one rule with no exceptions: every format gives you a file to open.
 **Cost:** one more small file per HTML target.
 **Revisit:** if callers only ever use the snippet.
+
+## D-30: Draft and failed visuals are marked in every file you could publish
+
+**Chosen:** a draft headline adds `DRAFT — headline not confirmed`; any failed
+check adds `CHECKS FAILED: <names>`. Markdown and HTML get a line above the
+headline, slides a colored bar across the top, and chart pictures (`.svg`) the
+same bar, so the mark stays with a picture copied on its own. The files are
+still written. Colors come from `status` in `config/theme.yaml`: `#8a5a00`
+(draft) and `#b3261e` (failed), 5.9:1 and 6.5:1 against white, above WCAG AA's
+4.5:1 for text both ways (colored text on white, white text on the bar).
+**Alternatives:** an HTML comment (the old draft marker: invisible); write no
+files when checks fail (the caller can't see what went wrong); mark only the
+page and not the picture (a copied picture loses the mark); mark only the
+picture where one exists (tables, text and Mermaid have none, so each
+technique would need its own rule).
+**Rationale:** a draft or a wrong number must not pass as finished work, in
+whichever file leaves the folder.
+**Cost:** a page showing a marked picture shows the mark twice. Mermaid and
+Vega-Lite sources (`.mmd`, `.vl.json`) aren't pictures and stay unmarked; the
+page that uses them is marked. A target that fails to draw writes no file to
+mark (the exit code and `result.json` report it). Contrast was computed by hand:
+dataviz's `validate_palette.py` wasn't available here.
+**Revisit:** if callers need marks they can switch off (e.g. internal review
+copies), or the theme changes (re-validate with `validate_palette.py`).

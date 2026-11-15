@@ -50,7 +50,7 @@
 
    | ID | Fix | Status |
    | --- | --- | --- |
-   | C1 | Status shows in the artifact itself: a visible DRAFT or CHECKS FAILED mark (today the draft marker is an HTML comment, and failed renders write polished files) | open |
+   | C1 | Status shows in the artifact itself: a visible DRAFT or CHECKS FAILED mark (today the draft marker is an HTML comment, and failed renders write polished files)  Done 2026-11-16 (D-30): a DRAFT or CHECKS FAILED line on Markdown and HTML pages, a colored bar on slides and on chart pictures; clean visuals unchanged | done |
    | C2 | Slide PNGs render the same on macOS and Windows (they depend on locally installed fonts). Done 2026-11-15 (D-27): bundled Source Sans 3; fixture slides are pixel-identical on Linux, macOS and Windows (CI) | done |
    | C3 | Any edit to the caller's takeaway sets `headline_status: draft` (2 of 2 runs changed the wording and kept `confirmed`; one didn't say so) | open |
    | C4 | Dependency bootstrap for an installed skill. Decided 2026-11-14: `uv run` when uv is installed (PEP 723 metadata in `visualize.py`, kept identical to `requirements.txt` by a test); otherwise `visualize.py` checks its imports first and stops with the exact per-OS commands (`py` / `python3`, a venv in the user cache folder, PEP 668), and `SKILL.md` says to show that message to the user, never work around it. Done 2026-11-15 (D-28): also re-runs itself with the cache venv once it exists, so setup happens once; green on macOS and Windows CI. Needs the mode D recorded run | done; recorded run pending |

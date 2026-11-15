@@ -48,7 +48,7 @@ xychart-beta
 
 <!-- v2: summary, for board -->
 
-<!-- plotpoint: draft headline; confirm before publishing -->
+> **DRAFT — headline not confirmed**
 
 **The library has 48,210 active members, up 3.2%**
 
@@ -72,7 +72,7 @@ xychart-beta
 
 <!-- v4: appendix, for managers -->
 
-<!-- plotpoint: draft headline; confirm before publishing -->
+> **DRAFT — headline not confirmed**
 
 **Branch operations at a glance: Central carries the most activity**
 
@@ -97,7 +97,7 @@ xychart-beta
 
 <!-- v5: body, for managers -->
 
-<!-- plotpoint: draft headline; confirm before publishing -->
+> **DRAFT — headline not confirmed**
 
 **Half of visitors wait under 8 minutes, but one in ten waits more than 19**
 

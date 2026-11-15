@@ -115,7 +115,9 @@ $VIZ render --checks-only requests/v2-number.yaml    # a single number
 $VIZ render --checks-only requests/broken.yaml       # fails on purpose
 ```
 
-`broken.yaml` fails three checks at once. Its comments say why; fix one problem
+`broken.yaml` fails three checks at once (and has a draft headline), so its
+HTML fragment starts with `DRAFT` and `CHECKS FAILED` lines; slides get a colored
+bar. Its comments say why; fix one problem
 at a time and re-run until it passes. That's the loop Claude follows.
 
 **Experiments worth doing.** Edit a request, re-run it, and look:

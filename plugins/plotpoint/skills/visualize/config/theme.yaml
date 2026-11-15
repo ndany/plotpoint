@@ -23,6 +23,12 @@ ink:
 accent: "#1f6fd1"     # the story's subject
 context: "#a3a29c"    # everything else; recedes
 
+# Status marks on files that aren't ready to publish (draft headline, failed checks).
+# Dark enough for text on the white surface (4.5:1 or better); not chart colors.
+status:
+  draft: "#8a5a00"
+  failed: "#b3261e"
+
 palette:              # categorical slots, fixed order, never cycled
   - "#1f6fd1"
   - "#e0602b"

@@ -178,7 +178,8 @@ def render(
     render_status: list[str] = []
     capacity_notes: list[str] = []
     callout_checks: dict[str, str] = {}
-    for target in request["targets"]:
+    plans = []
+    for target in request["targets"]:  # first decide and check every target...
         lay = layout.resolve(target, request.get("layout"))
         technique = _technique(request, target, vt)
         if technique in ("text", "table"):  # sized by the page, not drawn
@@ -198,26 +199,7 @@ def render(
             if c["kind"] == "note" or vt in TEXTUAL or technique in ("table", "text")
         ]
         notes += [n for n in shaped.notes if n.startswith("Excluded")]
-        try:
-            entry = _render_target(
-                target,
-                technique,
-                lay,
-                table,
-                shaped,
-                intent,
-                cmap,
-                notes,
-                request,
-                visual_id,
-                out_dir,
-                out_rel,
-            )
-            render_status.append(f"{target}: {entry.pop('_status', 'pass')}")
-        except Exception as exc:  # report per target, keep going
-            render_status.append(f"{target}: fail ({exc})")
-            continue
-        result["outputs"][target] = entry
+        plans.append((target, lay, technique, shaped, notes))
     fails = [k for k in callout_checks if k.startswith("fail")]
     result["checks"]["callouts"] = (
         {"status": "fail", "detail": fails[0][len("fail: ") :]}
@@ -236,6 +218,30 @@ def render(
         "status": "warn" if any("exceed" in n for n in capacity_notes) else "pass",
         "detail": "; ".join(capacity_notes) or "within capacity for every target",
     }
+    # ...so every file can carry the failures (render is judged per file, below)
+    failed = [k for k, c in result["checks"].items() if c["status"] == "fail"]
+    for target, lay, technique, shaped, notes in plans:
+        try:
+            entry = _render_target(
+                target,
+                technique,
+                lay,
+                table,
+                shaped,
+                intent,
+                cmap,
+                notes,
+                request,
+                visual_id,
+                out_dir,
+                out_rel,
+                failed,
+            )
+            render_status.append(f"{target}: {entry.pop('_status', 'pass')}")
+        except Exception as exc:  # report per target, keep going
+            render_status.append(f"{target}: fail ({exc})")
+            continue
+        result["outputs"][target] = entry
     worst = (
         "fail"
         if any("fail" in s for s in render_status)
@@ -301,9 +307,12 @@ def _render_target(
     visual_id: str,
     out_dir: Path,
     out_rel: str,
+    failed: list[str],
 ) -> dict[str, Any]:
     vt = intent["visual_type"]
-    headline, draft = intent["headline"], intent["headline_status"] == "draft"
+    headline = intent["headline"]
+    draft = intent["headline_status"] == "draft"
+    marks = output.status_marks(draft, failed)
     source, as_of = request["source"], str(request["as_of"])
     stem = f"{visual_id}-{_slug(target)}"
     entry: dict[str, Any] = {"technique": technique, "files": [], "snippet": ""}
@@ -334,7 +343,7 @@ def _render_target(
                 f'font-family="{html.escape(lay.font, quote=True)}"',
             )
         slide = output.compose_slide(
-            chart_svg, headline, notes, source, as_of, lay, big
+            chart_svg, headline, notes, source, as_of, lay, big, marks
         )
         svg_path, png_path = out_dir / f"{stem}.svg", out_dir / f"{stem}.png"
         svg_path.write_text(slide, encoding="utf-8")
@@ -351,7 +360,7 @@ def _render_target(
 
         def make(prefix: str) -> str:
             return output.md_snippet(
-                headline, body_for(prefix), md_notes, source, as_of, draft
+                headline, body_for(prefix), md_notes, source, as_of, marks
             )
 
         entry["snippet"] = make(f"{out_rel}/")
@@ -370,7 +379,7 @@ def _render_target(
         else:
             html_deliver(
                 output.html_figure(
-                    visual_id, headline, "", notes, source, as_of, lay, draft
+                    visual_id, headline, "", notes, source, as_of, lay, marks
                 )
             )
         return entry
@@ -394,7 +403,7 @@ def _render_target(
             )
             html_deliver(
                 output.html_figure(
-                    visual_id, headline, body, notes, source, as_of, lay, draft
+                    visual_id, headline, body, notes, source, as_of, lay, marks
                 )
             )
         return entry
@@ -411,7 +420,7 @@ def _render_target(
                     source,
                     as_of,
                     lay,
-                    draft,
+                    marks,
                 )
             )
         return entry
@@ -448,8 +457,10 @@ def _render_target(
             body += "\n\n" + tables.markdown_table(table, intent)
         (out_dir / f"{stem}.mmd").write_text(code + "\n", encoding="utf-8")
         entry["files"] = [f"{out_rel}/{stem}.mmd"]
-        md_deliver(lambda _: body, mm_notes)
         status, detail = mermaid.validate(code)
+        if status == "fail":  # the md file holds Mermaid that doesn't parse
+            marks = output.status_marks(draft, failed + ["render"])
+        md_deliver(lambda _: body, mm_notes)
         entry["_status"] = status if status == "pass" else f"{status} ({detail})"
         return entry
 
@@ -465,12 +476,14 @@ def _render_target(
             + output.VEGA_PAGE_INCLUDE
             + "\n-->\n"
             + output.html_figure(
-                visual_id, headline, body, notes, source, as_of, lay, draft
+                visual_id, headline, body, notes, source, as_of, lay, marks
             )
         )
         return entry
 
-    svg = vlc.vegalite_to_svg(json.dumps(spec))
+    svg = output.stamp_chart(  # marked too, in case it's copied on its own
+        vlc.vegalite_to_svg(json.dumps(spec)), marks, lay.font, lay.sizes["callout"]
+    )
     svg_path = out_dir / f"{stem}.svg"
     svg_path.write_text(svg, encoding="utf-8")
     entry["files"] = [f"{out_rel}/{svg_path.name}"]
@@ -487,7 +500,7 @@ def _render_target(
         body = output.inline_svg(svg, visual_id, headline, lay.width)
         html_deliver(
             output.html_figure(
-                visual_id, headline, body, notes, source, as_of, lay, draft
+                visual_id, headline, body, notes, source, as_of, lay, marks
             )
         )
     return entry

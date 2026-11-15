@@ -55,12 +55,58 @@ def _notes_text(notes: list[str]) -> str:
     return "\n".join(f"- {n}" for n in notes)
 
 
-def md_snippet(
-    headline: str, body: str, notes: list[str], source: str, as_of: str, draft: bool
-) -> str:
-    parts = []
+def status_marks(draft: bool, failed: list[str]) -> list[str]:
+    """Visible status text for a file a reader could publish; empty when the
+    headline is confirmed and every check passed."""
+    marks = []
     if draft:
-        parts.append("<!-- plotpoint: draft headline; confirm before publishing -->")
+        marks.append("DRAFT — headline not confirmed")
+    if failed:
+        marks.append("CHECKS FAILED: " + ", ".join(failed))
+    return marks
+
+
+def _status_color(marks: list[str]) -> str:
+    """Failed checks outrank a draft headline; colors come from the theme."""
+    status = config.theme()["status"]
+    return (
+        status["failed"]
+        if any(m.startswith("CHECKS") for m in marks)
+        else status["draft"]
+    )
+
+
+def stamp_chart(svg: str, marks: list[str], font: str, size: float) -> str:
+    """Add the status bar across the top of a chart SVG, so the mark travels with
+    the picture when it's copied on its own. Unchanged when there are no marks."""
+    if not marks:
+        return svg
+    svg = re.sub(r"^<\?xml[^>]*>\s*", "", svg)
+    w = float(re.search(r'<svg\b[^>]*?\swidth="([\d.]+)', svg).group(1))
+    h = float(re.search(r'<svg\b[^>]*?\sheight="([\d.]+)', svg).group(1))
+    bar = size * 2
+    surface = config.theme()["ink"]["surface"]
+    inner = re.sub(r"<svg\b", f'<svg x="0" y="{bar:.0f}"', svg, count=1)
+    return (
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{w:.0f}" '
+        f'height="{h + bar:.0f}" viewBox="0 0 {w:.0f} {h + bar:.0f}" '
+        f'font-family="{html.escape(font, quote=True)}">'
+        f'<rect width="{w:.0f}" height="{bar:.0f}" fill="{_status_color(marks)}"/>'
+        f'<text x="{size * 0.6:.0f}" y="{bar * 0.68:.0f}" font-size="{size}" '
+        f'font-weight="700" fill="{surface}">'
+        f"{html.escape('  ·  '.join(marks))}</text>{inner}</svg>"
+    )
+
+
+def md_snippet(
+    headline: str,
+    body: str,
+    notes: list[str],
+    source: str,
+    as_of: str,
+    marks: list[str],
+) -> str:
+    parts = [f"> **{m}**" for m in marks]
     parts.append(f"**{headline}**")
     parts.append(body)
     if notes:
@@ -77,7 +123,7 @@ def html_figure(
     source: str,
     as_of: str,
     layout: Layout,
-    draft: bool,
+    marks: list[str],
 ) -> str:
     t = config.theme()
     ink, s = t["ink"], layout.sizes
@@ -92,13 +138,18 @@ def html_figure(
     classes = "pp-figure pp-slide" if layout.is_slide else "pp-figure"
     margin = "0" if layout.is_slide else "0 0 2em"  # space before the next block
     out = []
-    if draft:
-        out.append("<!-- plotpoint: draft headline; confirm before publishing -->")
     out.append(
         f'<figure class="{classes}" data-plotpoint="{visual_id}" '
         f'style="margin:{margin};{width_css};font-family:{font};'
         f'color:{ink["primary"]}">'
     )
+    for m in marks:
+        out.append(
+            f'<p class="pp-status" role="note" style="font-size:{s["callout"]}px;'
+            f"font-weight:700;color:{_status_color([m])};margin:0 0 10px;"
+            f'border-left:4px solid {_status_color([m])};padding-left:8px">'
+            f"{html.escape(m)}</p>"
+        )
     out.append(
         f'<figcaption class="pp-headline" style="font-size:{headline_px}px;'
         f'font-weight:600;line-height:1.25;margin:0 0 12px">'
@@ -160,8 +211,10 @@ def compose_slide(
     as_of: str,
     layout: Layout,
     big_text: dict[str, str] | None = None,
+    marks: list[str] | None = None,
 ) -> str:
-    """A full slide SVG: headline, the chart (or a big number), notes and source."""
+    """A full slide SVG: headline, the chart (or a big number), notes and source.
+    Status marks, if any, go in a bar across the top."""
     t = config.theme()
     ink, s = t["ink"], layout.sizes
     cw, ch = layout.canvas
@@ -173,6 +226,17 @@ def compose_slide(
         f'<rect width="{cw}" height="{ch}" fill="{ink["surface"]}"/>',
     ]
     y = margin * 0.9
+    if marks:
+        bar = s["callout"] * 2
+        parts.append(
+            f'<rect width="{cw}" height="{bar:.0f}" fill="{_status_color(marks)}"/>'
+        )
+        parts.append(
+            f'<text x="{margin}" y="{bar * 0.68:.0f}" font-size="{s["callout"]}" '
+            f'font-weight="700" fill="{ink["surface"]}">'
+            f"{html.escape('  ·  '.join(marks))}</text>"
+        )
+        y = max(y, bar + margin * 0.3)
     for line in _wrap(headline, s["headline"], cw - 2 * margin)[:2]:
         y += s["headline"] * 1.15
         parts.append(

@@ -100,7 +100,7 @@ the checks; storyboard uses it to confirm each planned visual will render.
 | `vl.py` | Vega-Lite specs per visual type |
 | `mermaid.py` | Mermaid `xychart` source; validation with the Mermaid CLI |
 | `tables.py` | Markdown and HTML tables; number parts |
-| `output.py` | Inline SVG prep, HTML fragments, Markdown snippets, slide composition |
+| `output.py` | Inline SVG prep, HTML fragments, Markdown snippets, slide composition, status marks (draft, failed checks) |
 | `checks.py` | The checks |
 | `render.py` | Orchestrates one visual across targets |
 
