@@ -63,12 +63,50 @@ SHARE_WORDS = {
     "three quarters": 75.0,
     "most": None,  # more than half
 }
-SHARE_WORD = re.compile(r"\b(" + "|".join(SHARE_WORDS) + r")\b", re.I)
-THRESHOLD = re.compile(
-    r"(?:\b(?:over|above|under|below|within|more than|less than|at least|at most)"
-    r"\s+$)|(?:^\s*\w*\s*(?:or more|or longer|or less|or fewer|or above|or below|\+))",
+SHARE_WORD = re.compile(r"(?<!\bat )\b(" + "|".join(SHARE_WORDS) + r")\b", re.I)
+# Threshold words and the side of the threshold they claim values are on.
+SIDES = {
+    "under": "below",
+    "below": "below",
+    "less than": "below",
+    "within": "at or below",
+    "at most": "at or below",
+    "or less": "at or below",
+    "or fewer": "at or below",
+    "or below": "at or below",
+    "over": "above",
+    "above": "above",
+    "more than": "above",
+    "longer than": "above",
+    "exceed": "above",
+    "exceeds": "above",
+    "exceeded": "above",
+    "at least": "at or above",
+    "or more": "at or above",
+    "or longer": "at or above",
+    "or above": "at or above",
+    "+": "at or above",
+}
+THRESHOLD_BEFORE = re.compile(
+    r"\b(over|above|under|below|within|more than|less than|longer than|at least"
+    r"|at most|exceed|exceeds|exceeded)\s+$",
     re.I,
 )
+THRESHOLD_AFTER = re.compile(
+    r"^\s*\w*\s*(or more|or longer|or less|or fewer|or above|or below|\+)", re.I
+)
+# Quantifiers before a bare threshold: 'no wait over 40' claims every value is
+# at or below 40; 'all under 30' that every value is below 30; otherwise
+# ('30 minutes or more') that some value is beyond the threshold.
+NEGATION = re.compile(r"\b(no|none|never|not|nobody|nothing)\b|n't\b", re.I)
+UNIVERSAL = re.compile(r"\b(all|every|each|always)\b", re.I)
+EXISTENTIAL = re.compile(r"\b(some|a few|several|many|sometimes|occasionally)\b", re.I)
+OPPOSITE = {
+    "below": "at or above",
+    "at or below": "above",
+    "above": "at or below",
+    "at or above": "below",
+}
 AGGREGATE = re.compile(
     r"\b(mean|median|total|overall|typical|across|all|percentile|quartile|sum|combined"
     r"|everyone|every)\b",
@@ -335,14 +373,41 @@ def _shares_at(vals: list[float], t: float) -> dict[str, float]:
     }
 
 
+def _bare_threshold(
+    before: str, word: str, t: float, tok: str, col: str, vals: list[float]
+) -> tuple[bool, str]:
+    """Check a threshold with no share in its clause against every value."""
+    side = SIDES[word.lower()]
+    on_side = round(_shares_at(vals, t)[side] * len(vals) / 100)
+    n = len(vals)
+    universal = UNIVERSAL.search(before) or (
+        word.lower() in ("at most", "at least") and not EXISTENTIAL.search(before)
+    )
+    if NEGATION.search(before):  # 'no wait over 40': none above 40
+        ok, claim = on_side == 0, f"no value {side} {tok}"
+        problem = f"{on_side} of {n} values of {col} are {side} {tok}"
+    elif universal:  # 'all waits under 30': every value below 30
+        ok, claim = on_side == n, f"every value {side} {tok}"
+        problem = f"{n - on_side} of {n} values of {col} are {OPPOSITE[side]} {tok}"
+    else:  # '30 minutes or more': at least one value
+        ok, claim = on_side > 0, f"some values {side} {tok}"
+        problem = f"no value of {col} is {side} {tok}"
+    span = f"{col} runs {fmt(min(vals))} to {fmt(max(vals))}"
+    if ok:
+        return True, f"{tok} = threshold: {claim} ({on_side} of {n} values of {col})"
+    return False, f"{tok} (claims {claim}, but {problem}; {span})"
+
+
 def _threshold_pairs(
     text: str, table: Table, intent: dict[str, Any]
-) -> list[tuple[tuple[int, int], tuple[int, int], str]]:
+) -> list[tuple[tuple[int, int], tuple[int, int], str, bool]]:
     """Claims about a distribution, checked as a pair: '82% ... within 15 minutes'
     or 'half ... within 7.8' (a share equal to the share of values at, below or
-    above the other number in the same clause), and bare thresholds ('30 minutes
-    or more') with no share in their clause, which pass if any value is beyond
-    them. Distributions only (histograms, or tables above the raw-value limit)."""
+    above the other number in the same clause), and bare thresholds with no share
+    in their clause, checked against every value with their quantifier ('30
+    minutes or more': some; 'no wait over 40', 'all under 30', 'at most 20':
+    every). Each entry: (number span, share span, description, passed).
+    Distributions only (histograms, or tables above the raw-value limit)."""
     limit = config.capacity()["headline_check"]["raw_values_max_rows"]
     if intent.get("visual_type") != "histogram" and len(table.rows) <= limit:
         return []
@@ -369,6 +434,7 @@ def _threshold_pairs(
     for tm, (tv, _, _, ttok) in plains:
         lo, hi = _clause(text, tm.start())
         in_clause = [sh for sh in shares if lo <= sh[0][0] < hi and sh[0] not in used]
+        bare = None
         for col in cols:
             dist = _shares_at(table.numeric(col), tv)
             found = None
@@ -381,25 +447,24 @@ def _threshold_pairs(
                 if found:
                     break
             if found:
-                out.append((tm.span(), found[0], found[1]))
+                out.append((tm.span(), found[0], found[1], True))
                 used.add(found[0])
+                bare = None
                 break
-            phrase = (
-                text[max(0, tm.start() - 15) : tm.start()],
-                text[tm.end() : tm.end() + 30],
-            )
-            if not in_clause and (
-                THRESHOLD.search(phrase[0]) or THRESHOLD.search(phrase[1])
-            ):
-                if dist["at or above"] and dist["at or below"]:
-                    out.append(
-                        (
-                            tm.span(),
-                            tm.span(),
-                            f"{ttok} = threshold inside the range of {col}",
-                        )
-                    )
+            w = THRESHOLD_BEFORE.search(text[max(0, tm.start() - 15) : tm.start()])
+            w = w or THRESHOLD_AFTER.search(text[tm.end() : tm.end() + 30])
+            if not in_clause and w:
+                vals = table.numeric(col)
+                result = _bare_threshold(
+                    text[lo : tm.start()], w.group(1), tv, ttok, col, vals
+                )
+                if result[0]:
+                    out.append((tm.span(), tm.span(), result[1], True))
+                    bare = None
                     break
+                bare = bare or result[1]
+        if bare:
+            out.append((tm.span(), tm.span(), bare, False))
     return out
 
 
@@ -423,8 +488,8 @@ def headline_numbers(
     missing, matched = [], []
     for text in texts:
         consumed: list[tuple[int, int]] = []
-        for t_span, p_span, desc in _threshold_pairs(text, table, intent):
-            matched.append(desc)
+        for t_span, p_span, desc, ok in _threshold_pairs(text, table, intent):
+            (matched if ok else missing).append(desc)
             consumed += [t_span, p_span]
         for r in RATIO.finditer(text):  # "1 in 10": a share, checked as one
             if r.span() in consumed:

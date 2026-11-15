@@ -335,6 +335,47 @@ def test_numbers_in_scales_suffixes(text, expected) -> None:
     assert checks.numbers_in(text) == expected
 
 
+WAITS = data.load({"path": "data/wait_minutes.csv"}, FIXTURE)  # 0.3 to 47.5
+HIST = {"visual_type": "histogram", "fields": {"value": "wait_min"}}
+
+
+@pytest.mark.parametrize(
+    ("text", "status"),
+    [  # C8: a bare threshold passed whenever it was inside the data's range
+        ("Some waits are 30 minutes or more", "pass"),
+        ("Some waits exceed 40 minutes", "pass"),
+        ("Some waits are under 1 minute", "pass"),
+        ("Waits reach 60 minutes or more", "fail"),  # none that long
+        # universal claims need every value on the stated side
+        ("No wait is over 40 minutes", "fail"),
+        ("No wait exceeds 40 minutes", "fail"),
+        ("Waits never go above 35 minutes", "fail"),
+        ("All waits are under 30 minutes", "fail"),
+        ("Every wait was within 25 minutes", "fail"),
+        ("Waits are at most 20 minutes", "fail"),  # 'most' isn't a share here
+        ("Waits are no more than 40 minutes", "fail"),
+        ("No wait is over 50 minutes", "pass"),
+        ("All waits are under 48 minutes", "pass"),
+        ("Waits are at most 47.5 minutes", "pass"),
+        ("Waits are no more than 50 minutes", "pass"),
+        ("Waits are at least 0.3 minutes", "pass"),
+        # share-and-threshold pairs are unchanged
+        ("82% wait within 15 minutes", "pass"),
+        ("Most wait under 20 minutes", "pass"),
+    ],
+)
+def test_bare_thresholds_follow_their_quantifier(text: str, status: str) -> None:
+    got, detail = checks.headline_numbers([text], WAITS, HIST)
+    assert got == status, detail
+
+
+def test_threshold_failure_names_the_counterexample() -> None:
+    got, detail = checks.headline_numbers(["No wait is over 40 minutes"], WAITS, HIST)
+    assert got == "fail"
+    assert "claims no value above 40, but 1 of 300 values of wait_min" in detail
+    assert "47.5" in detail
+
+
 def test_ratio_is_checked_with_its_threshold() -> None:
     waits = data.load({"path": "data/wait_minutes.csv"}, FIXTURE)
     hist = {"visual_type": "histogram", "fields": {"value": "wait_min"}}

@@ -252,18 +252,17 @@ tables or Mermaid.
 
 **What counts as derivable** (`config/capacity.yaml` sets the row limit):
 
-| Counts | Doesn't count |
-| --- | --- |
-| Values of plotted measures (above 50 rows, only each measure's min and max) | Raw values of a large table ("half wait under 12" can't match one visit) |
-| Row count; totals; mean, median, quartiles, deciles | Bin edges; ranks; multiples ("8 times") |
-| Shares of a total, on bar, stacked bar and table visuals | Shares on time series |
-| Changes, percent or absolute, between consecutive values, first and last, or peak or low and latest (line, bar, stacked bar, table); value vs `previous` (number) | Changes between arbitrary rows or between two series |
-| A change in the direction the text says: "fell 3%" needs a fall, "−18%" a negative change | |
-| When a clause names a row ("Riverside", "Q2 '26"), only that row's figures, or an aggregate introduced by a word like median, mean, total or overall | Another row's figure ("Central's wait is 48" when 48 is Riverside's) |
-| Each measure's share of its row total, on multi-series line and bar charts ("E-book is 43% of loans") | Multiples ("8 times"): state both values instead |
-| Scaled numbers ("212k", "1.2M", "3bn", "4 million"), within their rounding ("212k" is 211,500 to 212,500). Against data stored in thousands, millions or billions only when the column name (`visits_k`), its `names` label ("Visits (k)") or `units` says so | Lowercase m ("15m" is a label, not 15 million) |
-| | Changes between rows of an unordered table |
-| Distributions (histograms, large tables): a share with a threshold in one clause ("82% within 15 minutes", "half within 7.8", "1 in 10 above 18.9"); a bare threshold with no share ("30 minutes or more") inside the data's range | |
+| Number | Counts | Doesn't count |
+| --- | --- | --- |
+| Plotted values | Values of plotted measures (above 50 rows, only each measure's min and max) | Raw values of a large table ("half wait under 12" can't match one visit) |
+| Summary figures | Row count; totals; mean, median, quartiles, deciles | Bin edges; ranks |
+| Shares | Shares of a total, on bar, stacked bar and table visuals; each measure's share of its row total, on multi-series line and bar charts ("E-book is 43% of loans") | Shares of a total on time series |
+| Changes | Percent or absolute, between consecutive values, first and last, or peak or low and latest (line, bar, stacked bar, table); value vs `previous` (number) | Changes between arbitrary rows, between two series, or between rows of an unordered table |
+| Direction | A change in the direction the text says: "fell 3%" needs a fall, "−18%" a negative change | A change the other way ("fell 3%" when it rose 2.7%) |
+| Named rows | When a clause names a row ("Riverside", "Q2 '26"), only that row's figures, or an aggregate introduced by a word like median, mean, total or overall | Another row's figure ("Central's wait is 48" when 48 is Riverside's) |
+| Multiples | None: state both values instead ("Riverside waits 48 minutes; the median is 7.8") | "8 times", "3x", "two-fold" |
+| Scaled numbers | "212k", "1.2M", "3bn", "4 million", within their rounding ("212k" is 211,500 to 212,500); against data stored in thousands, millions or billions only when the column name (`visits_k`), its `names` label ("Visits (k)") or `units` says so | "212k" against data in thousands that doesn't say so; lowercase m ("15m" is a label, not 15 million) |
+| Distributions (histograms, large tables) | A share with a threshold in one clause ("82% within 15 minutes", "half within 7.8", "1 in 10 above 18.9"); a bare threshold read with its quantifier: "30 minutes or more" needs some value that far, "no wait over 40", "all under 30" and "at most 20" need every value on that side | A bare threshold that only falls inside the data's range ("no wait over 40" when one is 47.5) |
 
 Numbers inside text cells ("Branch 12", "Q2 '26") are ignored. The check
 confirms a number can be derived and that a change goes the stated way; that it

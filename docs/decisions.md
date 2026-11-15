@@ -215,6 +215,10 @@ Scaled numbers ("212k", "1.2M", "3bn") count, within their rounding, and
 match data stored in that unit only when the measure declares it (column name,
 `names` or `units`); until 2026-11-14 they were skipped, so any value passed
 (tour, C7).
+Bare thresholds are read with their quantifier ("some" by default; "no",
+"never", "all", "every", "at most" mean every value), and a failure names the
+counterexample; until 2026-11-14 any threshold inside the data's range passed,
+so "no wait over 40" passed with a 47.5 in the data (tour, C8).
 **Alternatives:** every value and pairwise change (rejected: an independent
 tester got "fell 22%", "fell 3%" for a rise and "half within 12" past it).
 **Cost:** some true but unusual phrasings fail and need rewording; the row limit
