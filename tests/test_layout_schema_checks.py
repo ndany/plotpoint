@@ -432,3 +432,58 @@ def test_line_point_callouts_still_pass() -> None:
     req["intent"]["visual_type"] = "line"
     res = render.render(req, FIXTURE, dry_run=True)
     assert res["checks"]["callouts"]["status"] == "pass", res["checks"]["callouts"]
+
+
+# --- takeaway: a confirmed headline is the caller's words (C3) --------------------
+
+TAKE = "Total loans fell 18% during the renovation; e-book loans have since grown"
+
+
+@pytest.mark.parametrize(
+    "headline",
+    [
+        TAKE,
+        TAKE + ".",
+        "  total loans fell 18% during the renovation;  e-book loans have since grown",
+    ],
+)
+def test_takeaway_as_written_passes(headline: str) -> None:
+    intent = {"headline": headline, "headline_status": "confirmed"}
+    assert checks.takeaway(intent, TAKE)[0] == "pass"
+
+
+@pytest.mark.parametrize(
+    "headline",
+    [
+        TAKE + " to a new high",  # amplified
+        "Total loans fell 18% during the renovation",  # shortened
+        "Loans dropped 18% in the renovation; e-books have since grown",  # reworded
+    ],
+)
+def test_edited_takeaway_marked_confirmed_fails(headline: str) -> None:
+    intent = {"headline": headline, "headline_status": "confirmed"}
+    status, detail = checks.takeaway(intent, TAKE)
+    assert status == "fail"
+    assert "mark the headline draft" in detail and TAKE in detail
+
+
+def test_edited_takeaway_marked_draft_passes() -> None:
+    intent = {"headline": TAKE + " to a new high", "headline_status": "draft"}
+    assert checks.takeaway(intent, TAKE)[0] == "pass"
+
+
+def test_takeaway_skips_without_one() -> None:
+    intent = {"headline": "Anything", "headline_status": "confirmed"}
+    assert checks.takeaway(intent, None)[0] == "skip"
+
+
+def test_check_plan_holds_visuals_to_their_question_takeaway() -> None:
+    req = docio.load(FIXTURE / "storyboard-request.yaml")
+    res = docio.load(FIXTURE / "storyboard-golden.yaml")
+    plans = {r["id"]: r for r in render.plan_requests(req, res)}
+    q1 = next(q for q in req["questions"] if q["id"] == "q1")
+    assert plans["v1"]["takeaway"] == q1["takeaway"]
+    assert "takeaway" not in plans["v2"]  # q2 has no takeaway
+    res["visuals"][0]["intent"]["headline"] += " to a new high"
+    out = render.render(render.plan_requests(req, res)[0], FIXTURE, dry_run=True)
+    assert out["checks"]["takeaway"]["status"] == "fail"

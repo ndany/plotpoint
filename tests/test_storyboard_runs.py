@@ -1,4 +1,4 @@
-"""Storyboard expectations (E1-E11) on the reference answer and recorded runs.
+"""Storyboard expectations (E1-E12) on the reference answer and recorded runs.
 
 Model-behavior runs (T1 mode A, T2 mode B, T3 mode C) can't run in CI: they're
 produced by running the skill and saved under
@@ -20,7 +20,7 @@ def test_reference_answer_meets_every_expectation() -> None:
     results = load_and_evaluate(FIXTURE / "storyboard-golden.yaml")
     failed = {k: d for k, (ok, d) in results.items() if not ok}
     assert not failed, failed
-    assert len(results) == 11
+    assert len(results) == 12
 
 
 @pytest.mark.parametrize("run", RUNS, ids=[r.parent.name for r in RUNS])

@@ -108,7 +108,7 @@ every target; only the rendering changes.
 intent:
   visual_type: line
   rationale: "Change over time; two series, the story is about one"
-  headline: "Total loans fell 18% during the Q2 renovation; e-book loans have since grown to a new high"
+  headline: "Total loans fell 18% during the renovation; e-book loans have since recovered and grown"
   headline_status: confirmed      # confirmed | draft | title
   fields: {x: quarter, y: [print, ebook], names: {print: Print, ebook: E-book}}
   highlight: [ebook]              # column names or display names
@@ -122,7 +122,7 @@ intent:
 | --- | --- |
 | `visual_type` | Rendered in v1: `bar`, `stacked_bar`, `line`, `scatter`, `histogram`, `table`, `number`, `sentence`. Other chooser types are valid in a storyboard, but the renderer refuses them; draw those by hand following dataviz |
 | `headline` | A takeaway sentence. Every number in it must be derivable from the data (checked, below) and visible on the visual |
-| `headline_status` | `confirmed`: the caller's takeaway. `draft`: written without one; a person confirms it. `title`: a descriptive label for a reference visual with no single takeaway, such as an appendix table |
+| `headline_status` | `confirmed`: the caller's takeaway, word for word (any edit makes it `draft`; checked). `draft`: written without one; a person confirms it. `title`: a descriptive label for a reference visual with no single takeaway, such as an appendix table |
 | `fields` | Column roles, by type (table below); `names` maps columns to display names |
 | `highlight` | Entities in the accent color (column names or display names; scatter: point labels). Everything else turns context gray. Highlighted lines get an automatic direct label with their latest value ("E-book 445"), and highlighted scatter points a label with their name ("Riverside"), so don't repeat those in a callout. Tables bold highlighted rows; numbers ignore it |
 | `callouts` | Text pinned to the visual (next section) |
@@ -275,7 +275,7 @@ in the file itself (the result's `snippet` carries the same marks):
 | Mark | When | Where |
 | --- | --- | --- |
 | `DRAFT — headline not confirmed` | `headline_status: draft` | Above the headline |
-| `CHECKS FAILED: <check names>` | Any check with status `fail`, judged before drawing (`headline_numbers`, `outliers`, `callouts`, `legibility`); `render` joins the list when the Mermaid in a Markdown file doesn't parse | Above the headline |
+| `CHECKS FAILED: <check names>` | Any check with status `fail`, judged before drawing (`headline_numbers`, `takeaway`, `outliers`, `callouts`, `legibility`, `capacity`); `render` joins the list when the Mermaid in a Markdown file doesn't parse | Above the headline |
 
 A Markdown file gets a bold blockquote line per mark, an HTML fragment a
 `<p class="pp-status" role="note">` line per mark, and a slide (`.png` and
@@ -292,6 +292,7 @@ nothing to mark; the exit code and `result.json` report the failure.
 | Check | Fails when |
 | --- | --- |
 | `headline_numbers` | A number in the headline or a callout isn't derivable from the plotted data. The detail lists what each number matched; read it. Rules below |
+| `takeaway` | The headline is `confirmed` but isn't the request's `takeaway` as written (case, spacing and a final period aside). Skips without a `takeaway`; `check-plan` uses the visual's question's takeaway |
 | `outliers` | A flagged plotted column has no handling (above). A scatter checks both axes. Tables and sentences skip |
 | `callouts` | A rule or point callout matches nothing on the chart, or is on a bar or stacked bar chart drawn as an image (not drawn yet) |
 | `legibility` | Text would fall under 11 px at the narrowest expected display width. Text and table outputs skip it (the page sets their size) |

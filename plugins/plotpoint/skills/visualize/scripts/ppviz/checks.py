@@ -9,6 +9,8 @@
   bars, tables), or between a value and its `previous`. A change must go the
   way the text says ("fell 3%" doesn't match a 3% rise). Bin edges, ranks and
   differences between arbitrary rows don't count.
+- takeaway: a headline marked `confirmed` is the caller's takeaway, word for
+  word (case, spacing and a final period aside); any edit makes it a draft.
 - callouts: every point or rule callout is pinned to something on the chart and
   drawn (bar charts don't draw them yet).
 - outliers: a flagged outlier in a plotted measure is handled explicitly, per
@@ -555,6 +557,27 @@ def headline_numbers(
     if not matched:
         return "pass", "no numbers to check"
     return "pass", "matched: " + "; ".join(matched)
+
+
+def _plain(text: str) -> str:
+    return " ".join(text.split()).rstrip(".").casefold()
+
+
+def takeaway(intent: dict[str, Any], given: str | None) -> tuple[str, str]:
+    """A confirmed headline must be the caller's takeaway. Shortening, rewording
+    or adding a number is a new claim the caller hasn't confirmed: mark it draft."""
+    status = intent.get("headline_status")
+    if not given:
+        return "skip", "no takeaway given"
+    if status != "confirmed":
+        return "pass", f"headline is {status}; the caller confirms it"
+    if _plain(intent["headline"]) == _plain(given):
+        return "pass", "headline is the caller's takeaway"
+    return "fail", (
+        "headline is marked confirmed but differs from the caller's takeaway "
+        f"({given!r}); use the takeaway as written, or mark the headline draft "
+        "and tell the caller what changed"
+    )
 
 
 def legibility(layout: Layout) -> tuple[str, str]:

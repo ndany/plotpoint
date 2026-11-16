@@ -12,7 +12,7 @@ visuals:
     intent:
       visual_type: line
       rationale: "Change over time; two series, but the story is about e-book loans recovering"
-      headline: "Total loans fell 18% during the Q2 renovation; e-book loans have since grown to a new high"
+      headline: "Total loans fell 18% during the renovation; e-book loans have since recovered and grown"
       headline_status: confirmed
       fields: {x: quarter, y: [print, ebook], names: {print: Print, ebook: E-book}}
       highlight: [ebook]
@@ -46,7 +46,7 @@ visuals:
     intent:
       visual_type: scatter
       rationale: "Do two measures move together: staffing against waiting time, one point per branch"
-      headline: "Riverside's average wait is 48 minutes, far above every other branch"
+      headline: "Riverside's average wait is far above every other branch at similar staffing"
       headline_status: confirmed
       fields: {x: staff_fte, y: avg_wait_min, label: branch, names: {staff_fte: Staff (FTE), avg_wait_min: Average wait (minutes)}}
       highlight: [Riverside]

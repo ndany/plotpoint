@@ -1,4 +1,4 @@
-"""Expectations E1-E11 for storyboard results on the library-review fixture.
+"""Expectations E1-E12 for storyboard results on the library-review fixture.
 
 See tests/fixtures/library-review/expected.md. Used for the reference answer
 and for recorded runs (tests/fixtures/library-review/runs/).
@@ -135,6 +135,20 @@ def evaluate(result: dict[str, Any]) -> dict[str, tuple[bool, str]]:
         if status == "fail":
             failures.append(f"{v['id']}: {why}")
     out["E11"] = (not failures, "; ".join(failures) or "all derivable")
+
+    request = docio.load(FIXTURE / "storyboard-request.yaml")
+    given = {q["id"]: q["takeaway"] for q in request["questions"] if q.get("takeaway")}
+    edited = []
+    for v in visuals:
+        takes = {given[q] for q in v["questions"] if q in given}
+        if len(takes) == 1:
+            status, _ = checks.takeaway(v["intent"], takes.pop())
+            if status == "fail":
+                edited.append(v["id"])
+    out["E12"] = (
+        not edited,
+        f"confirmed headlines that edit the caller's takeaway: {edited}",
+    )
     return out
 
 

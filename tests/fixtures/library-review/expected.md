@@ -21,6 +21,7 @@ What a correct storyboard (modes A and B) and correct single-visual decisions
 | E9 | **Rendering:** every visual plans a technique for every requested target. (Whether techniques differ is a judgment; differential rendering itself is tested deterministically in T4) | Per-format planning |
 | E10 | Mermaid is only planned for `line` or `bar` visuals | Renderer support |
 | E11 | Every number in each headline is derivable from that visual's data (`headline_numbers` check) | Accuracy |
+| E12 | A `confirmed` headline is the caller's takeaway as written; any edit (shortened, reworded, a number added) is `draft` (`takeaway` check) | q1 and q3 have takeaways; never put words in the caller's mouth |
 
 Mode A (with the draft) should also name the draft's existing visuals in its
 advice (for example, replacing the two loans bar charts). That's judged by

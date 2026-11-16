@@ -194,7 +194,7 @@ The answer key isn't in the sandbox, so the session can't read it.
 ## 5. Compare with the answers (spoilers)
 
 Once you've formed your own view, the answers are in
-`$REPO/tests/fixtures/library-review/`. **Score a storyboard** against E1–E11
+`$REPO/tests/fixtures/library-review/`. **Score a storyboard** against E1–E12
 (in a separate terminal):
 
 ```bash

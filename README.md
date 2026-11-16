@@ -42,7 +42,7 @@ number, sentence.
 
 Example output (invented data):
 
-![Total loans fell 18% during the Q2 renovation; e-book loans have since grown to a new high](docs/examples/library-review/figures/v1/v1-image-slide.png)
+![Total loans fell 18% during the renovation; e-book loans have since recovered and grown](docs/examples/library-review/figures/v1/v1-image-slide.png)
 
 More in [`docs/examples/library-review/`](docs/examples/library-review/).
 

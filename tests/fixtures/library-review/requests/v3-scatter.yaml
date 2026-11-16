@@ -2,7 +2,7 @@
 id: v3
 intent:
   visual_type: scatter
-  headline: "Riverside's average wait is 48 minutes, far above every other branch"
+  headline: "Riverside's average wait is far above every other branch at similar staffing"
   headline_status: confirmed
   fields:
     x: staff_fte

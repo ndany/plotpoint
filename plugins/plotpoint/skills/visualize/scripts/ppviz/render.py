@@ -107,6 +107,9 @@ def plan_requests(
     Data is the visual's own `data` if set, else its first dataset's; sources of
     all its datasets are joined; as-of is the latest."""
     datasets = {d["id"]: d for d in request["datasets"]}
+    takeaways = {
+        q["id"]: q["takeaway"] for q in request["questions"] if q.get("takeaway")
+    }
     out = []
     for v in result["visuals"]:
         used = [datasets[d] for d in v["datasets"] if d in datasets]
@@ -128,6 +131,9 @@ def plan_requests(
                 "out_dir": f"figures/{v['id']}",
             }
         )
+        given = {takeaways[q] for q in v.get("questions", []) if q in takeaways}
+        if len(given) == 1:  # one takeaway to hold a confirmed headline to
+            out[-1]["takeaway"] = given.pop()
     for r in out:
         if r["layout"] is None:
             del r["layout"]
@@ -167,6 +173,8 @@ def render(
     texts = [intent["headline"]] + [c["text"] for c in intent.get("callouts") or []]
     st, detail = checks.headline_numbers(texts, table, intent)
     result["checks"]["headline_numbers"] = {"status": st, "detail": detail}
+    st, detail = checks.takeaway(intent, request.get("takeaway"))
+    result["checks"]["takeaway"] = {"status": st, "detail": detail}
     st, detail = checks.outliers(prof, measures, intent)
     result["checks"]["outliers"] = {"status": st, "detail": detail}
     if intent["headline_status"] == "draft":

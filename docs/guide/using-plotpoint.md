@@ -65,7 +65,7 @@ choose: it asks for the `html/document` rendering.
 id: v1
 intent:
   visual_type: line
-  headline: "Total loans fell 18% during the Q2 renovation; e-book loans have since grown to a new high"
+  headline: "Total loans fell 18% during the renovation; e-book loans have since recovered and grown"
   headline_status: confirmed
   fields: {x: quarter, y: [print, ebook], names: {print: Print, ebook: E-book}}
   highlight: [ebook]

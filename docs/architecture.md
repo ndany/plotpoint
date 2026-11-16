@@ -81,7 +81,7 @@ render request
   ├─ shape         per target: plotted rows, exclusions, capacity
   ├─ draw          Vega-Lite, Mermaid, table or text
   ├─ package       deliverable file (.md, .html, .png) and snippet
-  ├─ check         headline numbers, outliers, callouts,
+  ├─ check         headline numbers, takeaway, outliers, callouts,
   │                legibility, capacity, render
   ▼
 result (also written to <out_dir>/<id>.result.json)

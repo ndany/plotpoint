@@ -67,8 +67,11 @@ Specs and field meanings: `references/spec.md`. Validate anything you write:
      (`references/chart-chooser.md`). A table, a single number or a sentence
      is a valid answer.
    - **Headline:** a sentence stating the takeaway, not the topic. Use the
-     caller's `takeaway` if given (`headline_status: confirmed`). Otherwise
-     state what the data shows and mark it `draft`. A reference table with no
+     caller's `takeaway` word for word if given (`headline_status:
+     confirmed`). If you change it in any way (shorten, reword, add a number),
+     mark it `draft` and tell the caller what you changed; the `takeaway` check
+     fails a `confirmed` headline that differs. Otherwise state what the data
+     shows and mark it `draft`. A reference table with no
      single takeaway gets a descriptive `title`.
    - **Fields:** which columns play which role; display `names` for columns;
      `bins` for a histogram (a maximum, default 20; `names: {count: ...}` titles its
@@ -89,7 +92,7 @@ Specs and field meanings: `references/spec.md`. Validate anything you write:
    `visualize.py render request.yaml`. Targets, layouts and techniques:
    `references/targets.md`.
 4. **Read the checks** in the result. Fix every `fail` (`headline_numbers`,
-   `outliers`, `callouts`, `legibility`, `render`) and re-render; report
+   `takeaway`, `outliers`, `callouts`, `legibility`, `render`) and re-render; report
    `warn`s. Read what each headline number matched: a pass on the wrong row,
    period or statistic is still wrong, so confirm each match is the one your
    sentence means. Render flags (`--dry-run`, `--quiet`): `references/spec.md`, "Render flags".

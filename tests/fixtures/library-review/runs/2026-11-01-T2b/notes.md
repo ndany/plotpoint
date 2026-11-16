@@ -38,3 +38,8 @@ Followed SKILL.md storyboard steps 1 to 5. The request validated, all seven data
 8. **Scaffolding for step 5 is missing.** Step 5 needs a full render request per visual (source, as_of, targets, color_map, out_dir), but SKILL.md doesn't say where scratch requests go, whether out_dir matters for a dry-run, or that `technique` should match the storyboard's `renderings`. A short template, or a `dry-run --storyboard result.yaml` mode that reads the result directly, would remove the duplication: right now every intent is written twice.
 9. **Minor: the outlier example is ambiguous.** profiling.md says "a big category in a bar chart may be an IQR outlier… use accept". For the scatter, the same branch (Central) is an outlier on the x axis and Riverside on the y axis. The per-column list handled this well, but SKILL.md step 2 could say explicitly that scatter checks both axes.
 10. **Minor: profile noise.** For a 5-row string column (quarter), the profile prints every value under `top` with share 0.2, which adds bulk and no information. Could the profile summarise it as "all distinct" instead?
+
+## Known miss added 2026-11-16 (C3)
+
+E12: v3 adds "of 48 minutes" to the q3 takeaway and keeps `headline_status:
+confirmed`. The run predates the takeaway check; it is the behavior C3 fixes.

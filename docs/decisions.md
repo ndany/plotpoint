@@ -398,3 +398,25 @@ so a headline that refers to a bar indirectly ("the central branch") only gets
 the warning. Line charts don't fold and aren't checked.
 **Revisit:** if callers want a setting to drop "Other" entirely, or a headline
 names a bar by another word.
+
+## D-33: A confirmed headline is the caller's takeaway, word for word
+
+**Chosen:** `headline_status: confirmed` means the headline is the caller's
+`takeaway` as written; case, spacing and a final period don't count. A new
+`takeaway` check fails a confirmed headline that differs. `check-plan` gives
+each visual its question's takeaway (when its questions have exactly one), so
+storyboards are checked too. `SKILL.md` tells the model to mark any edit
+`draft` and say what changed; expectation E12 checks recorded runs.
+**Alternatives:** allow "close enough" edits (word overlap or similarity: any
+threshold lets a new claim through, e.g. "to a new high"); instructions only
+(two of two tour runs reworded and kept `confirmed`).
+**Rationale:** the caller confirmed a sentence, not a topic. A shortened,
+reworded or number-added headline is a new claim they haven't seen, so it has
+to show as a draft until they confirm it.
+**Cost:** a harmless rewording also becomes a draft and needs one confirmation.
+A visual answering two questions with different takeaways isn't checked. The
+reference answer and the tour requests had amplified the takeaways for v1 and
+v3; they now use them as written (v1 slide hash refreshed after looking; T2b's
+recorded run is a known miss).
+**Revisit:** if callers want to allow edits by listing approved wordings, or a
+visual commonly answers several questions.

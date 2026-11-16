@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Score a storyboard result for the library-review fixture against E1-E11.
+"""Score a storyboard result for the library-review fixture against E1-E12.
 
     .venv/bin/python scripts/score_storyboard.py path/to/storyboard-result.yaml
 

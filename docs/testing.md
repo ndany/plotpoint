@@ -22,7 +22,7 @@ storyboard must **order**, **merge**, **demote**, **cut**, place by
 | `drafts/review.md` | A draft with naive visuals |
 | `storyboard-golden.yaml` | The maintainer-reviewed reference answer |
 | `render-data.yaml` | Which file each reference visual renders from |
-| `expected.md` | Expectations E1–E11 and single-visual expectations |
+| `expected.md` | Expectations E1–E12 and single-visual expectations |
 | `requests/` | Render requests for the hands-on tour ([`guide/try-it.md`](guide/try-it.md)); a test keeps them behaving as documented |
 | `runs/` | Recorded model runs, kept verbatim (not linted): T1–T3, then T2b, T3b and T3c (with headline probes) after the fixes each round prompted |
 
@@ -101,7 +101,7 @@ honest by tests.
    scratch folder and record the result in `notes.md`.
 3. Save the outputs to `tests/fixtures/library-review/runs/<date>-<test>/`:
    `storyboard-result.yaml` (T1, T2), `notes.md`, and for T3 the render requests.
-4. `pytest` checks every saved storyboard result against E1–E11
+4. `pytest` checks every saved storyboard result against E1–E12
    (`scripts/score_storyboard.py RESULT` scores one by hand). If a run
    misses an expectation for a reason you accept, list it in that run's
    `known-misses.txt` (`E5 reason...`) and record why in `notes.md`.

@@ -2,6 +2,6 @@
 # with the bundled Source Sans 3 font. Must match on macOS, Windows and Linux.
 # v1 line, v2 big number, v5 histogram. v2 and v5 have draft headlines, so their
 # slides carry the DRAFT bar (C1).
-v1: c0c9425fb06ad64e3bb23abf96f7f447ba208a13f928ae5730e3ea2f6642fb3f
+v1: 6a2947fa0749f1480a94f07475325e559b97abe38582c6faf5a49b1a33c4d72c
 v2: 26562bd56c9da6454a008e19111035d0c66d28a1606bfd073be2c7216468caae
 v5: 12ee1d2d273da94ff2220b11ad2c93c424dbca85c590ee75bdfa411aece14071
