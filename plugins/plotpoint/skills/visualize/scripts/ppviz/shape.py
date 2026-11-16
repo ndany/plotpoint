@@ -26,6 +26,9 @@ class Shaped:
     orientation: str = "vertical"
     notes: list[str] = field(default_factory=list)
     excluded: list[Any] = field(default_factory=list)
+    # set when smaller items were folded into "Other": its total, and each shown
+    # bar or segment smaller than it (name -> value)
+    other: dict[str, Any] | None = None
 
 
 def display(name: str, names: dict[str, str]) -> str:
@@ -166,6 +169,11 @@ def shape(table: Table, intent: dict[str, Any], kind: str, width: int) -> Shaped
                 {"x": k, "series": "Other", "value": v} for k, v in merged.items()
             ]
             s.rows, s.series = long, keep + ["Other"]
+            other_total = sum(merged.values())
+            s.other = {
+                "value": other_total,
+                "smaller": {n: totals[n] for n in keep if totals[n] < other_total},
+            }
             notes.append(
                 f"{len(series) - len(keep)} smaller segments combined into 'Other' "
                 f"(capacity {lim} for this layout)"
@@ -189,9 +197,17 @@ def shape(table: Table, intent: dict[str, Any], kind: str, width: int) -> Shaped
         elif sort == "label":
             pts.sort(key=lambda r: str(r["x"]))
         lim = limit("bar")
+        other = None
         if len(pts) > lim:
             head, tail = pts[: lim - 1], pts[lim - 1 :]
-            pts = head + [{"x": "Other", "value": sum(r["value"] for r in tail)}]
+            other_total = sum(r["value"] for r in tail)
+            pts = head + [{"x": "Other", "value": other_total}]
+            other = {
+                "value": other_total,
+                "smaller": {
+                    str(r["x"]): r["value"] for r in head if r["value"] < other_total
+                },
+            }
             notes.append(
                 f"{len(tail)} smaller categories combined into 'Other' "
                 f"(capacity {lim} for this layout)"
@@ -203,6 +219,7 @@ def shape(table: Table, intent: dict[str, Any], kind: str, width: int) -> Shaped
         return Shaped(
             vt,
             pts,
+            other=other,
             x_type=_x_type(table, x),
             categories=[p["x"] for p in pts],
             x_title=None,

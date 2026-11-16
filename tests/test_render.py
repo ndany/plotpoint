@@ -191,6 +191,112 @@ def test_capacity_folds_bars_into_other(workdir: Path) -> None:
     assert any("capacity 7" in n for n in res["notes"])
 
 
+# --- a folded "Other" that outgrows what it sits beside (C6) ---------------------
+
+
+def _fold_request(work: Path, values: list[int], headline: str, **intent) -> dict:
+    """A bar request on a slide (capacity 7): the first six values are shown and
+    the rest fold into "Other"."""
+    rows = "\n".join(f"Branch {i},{v}" for i, v in enumerate(values))
+    req = _bar_request(work, 0, ["image/slide"])
+    req["id"] = "fold"
+    req["out_dir"] = "figures/fold"
+    req["data"] = {"inline": "branch,visits\n" + rows + "\n"}
+    req["intent"] = {**req["intent"], "headline": headline, **intent}
+    return req
+
+
+BIG_TAIL = [500, 300, 120, 110, 100, 90, 80, 80, 80, 80]  # Other = 320
+
+
+def test_other_bigger_than_a_named_bar_fails(workdir: Path) -> None:
+    res = render.render(
+        _fold_request(workdir, BIG_TAIL, "Branch 1 is second in visits"), workdir
+    )
+    cap = res["checks"]["capacity"]
+    assert cap["status"] == "fail", cap
+    assert "'Other' (320) is bigger than Branch 1 (300)" in cap["detail"]
+    slide = (workdir / "figures/fold/fold-image-slide.svg").read_text(encoding="utf-8")
+    assert re.search(r"CHECKS FAILED: [^<]*capacity", slide)  # mark reaches the file
+
+
+def test_other_bigger_than_a_highlighted_bar_fails(workdir: Path) -> None:
+    req = _fold_request(
+        workdir, BIG_TAIL, "Branch 0 leads in visits", highlight=["Branch 2"]
+    )
+    assert render.render(req, workdir)["checks"]["capacity"]["status"] == "fail"
+
+
+def test_other_bigger_than_unnamed_bars_warns(workdir: Path) -> None:
+    res = render.render(
+        _fold_request(workdir, BIG_TAIL, "Branch 0 leads in visits"), workdir
+    )
+    cap = res["checks"]["capacity"]
+    assert cap["status"] == "warn", cap
+    assert "Branch 1 (300)" in cap["detail"] and "Branch 0 (" not in cap["detail"]
+
+
+def test_small_other_passes(workdir: Path) -> None:
+    small_tail = [500, 300, 120, 110, 100, 90, 10, 10, 10]  # Other = 30
+    res = render.render(
+        _fold_request(workdir, small_tail, "Branch 1 is second in visits"), workdir
+    )
+    cap = res["checks"]["capacity"]
+    assert cap["status"] == "pass", cap
+    assert "combined into 'Other'" in cap["detail"]
+
+
+def test_tour_case_other_outgrows_central_fails(workdir: Path) -> None:
+    """The tour's finding: on a slide, six branches fold into 'Other' (297k),
+    longer than the highlighted Central (212k), and capacity said pass."""
+    req = {
+        "id": "tour",
+        "intent": {
+            "visual_type": "bar",
+            "headline": "Central leads all branches in visits",
+            "headline_status": "draft",
+            "fields": {"x": "branch", "y": "visits_k"},
+            "highlight": ["Central"],
+            "outlier_handling": {"method": "none_flagged"},
+        },
+        "data": {"path": "data/branch_overview.json"},
+        "source": "test",
+        "as_of": "2026-09-30",
+        "targets": ["image/slide"],
+        "out_dir": "figures/tour",
+    }
+    cap = render.render(req, workdir)["checks"]["capacity"]
+    assert cap["status"] == "fail"
+    assert "'Other' (297) is bigger than Central (212)" in cap["detail"]
+
+
+def test_stacked_other_bigger_than_a_highlighted_segment_fails(
+    workdir: Path,
+) -> None:
+    # slide capacity 4: a, b and c are kept; d, e and f fold into Other
+    # (totals: a 40, b 20, c 16, Other 36)
+    rows = "\n".join(f"Q{q},10,5,4,3,3,3" for q in range(1, 5))
+    req = {
+        "id": "sfold",
+        "intent": {
+            "visual_type": "stacked_bar",
+            "headline": "Segment a is the largest",
+            "headline_status": "draft",
+            "fields": {"x": "quarter", "y": ["a", "b", "c", "d", "e", "f"]},
+            "highlight": ["c"],
+            "outlier_handling": {"method": "none_flagged"},
+        },
+        "data": {"inline": "quarter,a,b,c,d,e,f\n" + rows + "\n"},
+        "source": "test",
+        "as_of": "2026-09-30",
+        "targets": ["image/slide"],
+        "out_dir": "figures/sfold",
+    }
+    cap = render.render(req, workdir)["checks"]["capacity"]
+    assert cap["status"] == "fail", cap
+    assert "'Other' (36) is bigger than c (16), which" in cap["detail"]
+
+
 @pytest.mark.parametrize(
     ("visual_type", "fields", "dataset"),
     [

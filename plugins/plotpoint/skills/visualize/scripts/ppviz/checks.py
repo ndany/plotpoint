@@ -15,7 +15,10 @@
   column when columns need different handling. Tables and sentences skip.
 - legibility: the smallest text stays >= the minimum px at the narrowest
   expected display width.
-- capacity: reported from the shaping step (form changed, or warning).
+- capacity: reported from the shaping step (form changed, or warning). When
+  smaller items were folded into "Other" and "Other" is bigger than a shown
+  bar or segment, it warns; it fails when that bar is highlighted or named in
+  the headline, because the chart then contradicts the headline.
 """
 
 from __future__ import annotations
@@ -587,6 +590,32 @@ def callouts(
         return "fail", "; ".join(problems) + ". Unpinned callouts are not drawn."
     n = len(intent.get("callouts") or [])
     return "pass", f"{n} callout(s) matched to the data" if n else "no callouts"
+
+
+def other_fold(intent: dict[str, Any], shaped: Shaped) -> tuple[str, str] | None:
+    """A folded "Other" that outgrows a shown item reads as a category of its own.
+    None when nothing was folded or "Other" is the smallest."""
+    if not shaped.other or not shaped.other["smaller"]:
+        return None
+    total, smaller = shaped.other["value"], shaped.other["smaller"]
+    text = intent.get("headline", "")
+    key = {str(h) for h in intent.get("highlight") or []} | {
+        n for n in smaller if re.search(r"(?<!\w)" + re.escape(n) + r"(?!\w)", text)
+    }
+    hit = [n for n in smaller if n in key]
+    if hit:
+        return "fail", (
+            f"'Other' ({fmt(total)}) is bigger than "
+            + ", ".join(f"{n} ({fmt(smaller[n])})" for n in hit)
+            + ", which the headline or highlight is about; show the top items "
+            "without 'Other' and say how many were left out, or use a layout "
+            "with more room"
+        )
+    return "warn", (
+        f"'Other' ({fmt(total)}) is bigger than shown "
+        + ", ".join(f"{n} ({fmt(v)})" for n, v in smaller.items())
+        + "; readers may take it for one item"
+    )
 
 
 def outliers(

@@ -177,6 +177,7 @@ def render(
     legib: list[str] = []
     render_status: list[str] = []
     capacity_notes: list[str] = []
+    capacity_status: list[str] = []  # from a folded "Other"; "exceed" notes warn
     callout_checks: dict[str, str] = {}
     plans = []
     for target in request["targets"]:  # first decide and check every target...
@@ -191,6 +192,10 @@ def render(
         capacity_notes += [
             f"{target}: {n}" for n in shaped.notes if "capacity" in n or "exceed" in n
         ]
+        fold = checks.other_fold(intent, shaped)
+        if fold:
+            capacity_notes.append(f"{target}: {fold[1]}")
+            capacity_status.append(fold[0])
         st, detail = checks.callouts(intent, shaped, technique)
         callout_checks.setdefault(f"{st}: {detail}", target)
         notes = [
@@ -214,8 +219,14 @@ def render(
         else "pass",
         "detail": "; ".join(legib),
     }
+    if any("exceed" in n for n in capacity_notes):
+        capacity_status.append("warn")
     result["checks"]["capacity"] = {
-        "status": "warn" if any("exceed" in n for n in capacity_notes) else "pass",
+        "status": "fail"
+        if "fail" in capacity_status
+        else "warn"
+        if capacity_status
+        else "pass",
         "detail": "; ".join(capacity_notes) or "within capacity for every target",
     }
     # ...so every file can carry the failures (render is judged per file, below)

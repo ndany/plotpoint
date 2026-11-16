@@ -295,7 +295,7 @@ nothing to mark; the exit code and `result.json` report the failure.
 | `outliers` | A flagged plotted column has no handling (above). A scatter checks both axes. Tables and sentences skip |
 | `callouts` | A rule or point callout matches nothing on the chart, or is on a bar or stacked bar chart drawn as an image (not drawn yet) |
 | `legibility` | Text would fall under 11 px at the narrowest expected display width. Text and table outputs skip it (the page sets their size) |
-| `capacity` | Warns when the data exceeds what the layout carries (and what was folded into "Other") |
+| `capacity` | Warns when the data exceeds what the layout carries (and what was folded into "Other"), or a folded "Other" is bigger than a shown bar or segment. Fails when that bar or segment is highlighted or named in the headline (`targets.md`, "Capacity") |
 | `render` | A target failed to draw, or Mermaid didn't parse |
 
 **What counts as derivable** (`config/capacity.yaml` sets the row limit):

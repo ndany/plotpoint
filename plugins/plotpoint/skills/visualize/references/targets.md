@@ -77,5 +77,9 @@ Past a limit, the form changes rather than squeezing. Document limits are for
 | `scatter` (points) | 2,000 | 500 | Warning: overplotting |
 | Mermaid `xychart` (categories) | 10 | — | Warning: crowded labels |
 
-The `capacity` check reports what changed. If the result no longer tells the
-story, choose another form: small multiples, a table, or a highlight.
+The `capacity` check reports what changed. A folded "Other" bigger than a shown
+bar or segment warns (readers take it for one item); it fails when that bar is
+highlighted or named in the headline, because the chart then contradicts the
+headline. If the result no longer tells the story, choose another form: the top
+items without "Other" plus a note of how many were left out, a layout with more
+room, small multiples, a table, or a highlight.

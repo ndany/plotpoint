@@ -378,3 +378,23 @@ tour misread it. Version 0.1 has no outside users to break.
 **Cost:** recorded runs quote the old name verbatim and aren't edited, so they
 no longer run as written.
 **Revisit:** never for the alias; rename again only if `--quiet` is misread.
+
+## D-32: A folded "Other" bigger than what it sits beside warns or fails
+
+**Chosen:** when capacity folds the smallest bars (or stacked segments) into
+"Other", the `capacity` check compares "Other" with every item still shown. If
+it is bigger than any of them, the check warns and names them. If one of those
+is highlighted or named in the headline, it fails, so the status mark goes on
+every file.
+**Alternatives:** a note only (what the tour found: "Other" at 297k beside a
+highlighted 212k, and the check said pass); always fail (folding is often fine,
+and a big "Other" beside unnamed bars is a judgment call); never fold, always
+show every bar (breaks the layout's capacity).
+**Rationale:** a merged bar that outgrows the bar the headline is about makes
+the chart contradict the headline; beside unnamed bars it's a readability risk,
+not an error.
+**Cost:** "named" means the bar's label appears in the headline as a whole word,
+so a headline that refers to a bar indirectly ("the central branch") only gets
+the warning. Line charts don't fold and aren't checked.
+**Revisit:** if callers want a setting to drop "Other" entirely, or a headline
+names a bar by another word.
