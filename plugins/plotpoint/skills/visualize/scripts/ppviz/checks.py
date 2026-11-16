@@ -9,7 +9,8 @@
   bars, tables), or between a value and its `previous`. A change must go the
   way the text says ("fell 3%" doesn't match a 3% rise). Bin edges, ranks and
   differences between arbitrary rows don't count.
-- callouts: every point or rule callout is pinned to something on the chart.
+- callouts: every point or rule callout is pinned to something on the chart and
+  drawn (bar charts don't draw them yet).
 - outliers: a flagged outlier in a plotted measure is handled explicitly, per
   column when columns need different handling. Tables and sentences skip.
 - legibility: the smallest text stays >= the minimum px at the narrowest
@@ -563,12 +564,25 @@ def legibility(layout: Layout) -> tuple[str, str]:
     )
 
 
-def callouts(intent: dict[str, Any], shaped: Shaped) -> tuple[str, str]:
-    problems = [
-        p
-        for c in intent.get("callouts") or []
-        if (p := match_callout(c, shaped)[1]) is not None
-    ]
+def callouts(
+    intent: dict[str, Any], shaped: Shaped, technique: str = "svg"
+) -> tuple[str, str]:
+    """Every point or rule callout must be drawn. Bar charts drawn by Vega-Lite
+    don't draw them yet, so they fail there; Mermaid, table and text outputs list
+    them as notes."""
+    problems = []
+    for c in intent.get("callouts") or []:
+        if (
+            shaped.visual_type in ("bar", "stacked_bar")
+            and c["kind"] in ("point", "rule")
+            and technique not in ("mermaid", "table", "text")
+        ):
+            problems.append(
+                f"{c['kind']} callout {c['text'].splitlines()[0]!r}: bar charts don't "
+                "draw point or rule callouts yet; use a note, or highlight the bar"
+            )
+        elif (p := match_callout(c, shaped)[1]) is not None:
+            problems.append(p)
     if problems:
         return "fail", "; ".join(problems) + ". Unpinned callouts are not drawn."
     n = len(intent.get("callouts") or [])

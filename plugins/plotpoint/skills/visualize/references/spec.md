@@ -133,14 +133,15 @@ intent:
 
 | Kind | Pinned by | Drawn as |
 | --- | --- | --- |
-| `rule` | `x`: an x-axis value (line, bar, stacked bar), or a number (scatter, histogram) | A vertical line with the text beside it, in the secondary ink color (context). Several rule labels stack so they don't collide |
-| `point` (text in the primary ink color: it's about the data) | Line, bar, stacked bar: `x` (an x-axis value) and `series` (column or display name; required with several series). Scatter: `series` set to the point's label (`fields.label` value) or series, plus `x` (its numeric x value) when labels repeat. Not available on histograms | Text next to that point |
+| `rule` | `x`: an x-axis value (line), or a number (scatter, histogram). Bar and stacked bar charts don't draw rules yet: the `callouts` check fails; use a note or `highlight` | A vertical line with the text beside it, in the secondary ink color (context). Several rule labels stack so they don't collide |
+| `point` (text in the primary ink color: it's about the data) | Line: `x` (an x-axis value) and `series` (column or display name; required with several series). Scatter: `series` set to the point's label (`fields.label` value) or series, plus `x` (its numeric x value) when labels repeat. Not available on histograms; bar and stacked bar charts don't draw them yet (the check fails; use a note or `highlight`) | Text next to that point |
 | `note` | Nothing | A line of text under the visual |
 
-Use `\n` for a line break. A callout that matches nothing fails the
-`callouts` check and isn't drawn, so fix it before delivering. Mermaid and text
-outputs show rule and point callouts as text under the visual; tables and
-numbers show every callout as a note. Label positions are automatic in v1.
+Use `\n` for a line break. A callout that matches nothing, or a rule or point
+callout on a bar chart drawn as an image, fails the `callouts` check and isn't
+drawn, so fix it before delivering. Mermaid, table and text outputs show rule
+and point callouts as text under the visual; numbers show every callout as a
+note. Label positions are automatic in v1.
 
 ### Outlier handling
 
@@ -245,7 +246,7 @@ tables or Mermaid.
 | --- | --- |
 | `headline_numbers` | A number in the headline or a callout isn't derivable from the plotted data. The detail lists what each number matched; read it. Rules below |
 | `outliers` | A flagged plotted column has no handling (above). A scatter checks both axes. Tables and sentences skip |
-| `callouts` | A rule or point callout matches nothing on the chart |
+| `callouts` | A rule or point callout matches nothing on the chart, or is on a bar or stacked bar chart drawn as an image (not drawn yet) |
 | `legibility` | Text would fall under 11 px at the narrowest expected display width. Text and table outputs skip it (the page sets their size) |
 | `capacity` | Warns when the data exceeds what the layout carries (and what was folded into "Other") |
 | `render` | A target failed to draw, or Mermaid didn't parse |

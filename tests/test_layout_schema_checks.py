@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 from conftest import FIXTURE
-from ppviz import checks, colors, config, data, docio, layout, profile, schema
+from ppviz import checks, colors, config, data, docio, layout, profile, render, schema
 
 PRESETS_BY_TARGET = {
     "md/document": ["prose", "report", "wide", "dashboard"],
@@ -381,3 +381,54 @@ def test_ratio_is_checked_with_its_threshold() -> None:
     hist = {"visual_type": "histogram", "fields": {"value": "wait_min"}}
     text = "1 in 10 waits more than 25 minutes"
     assert checks.headline_numbers([text], waits, hist)[0] == "fail"
+
+
+def _bar_request(kind: str, targets: list[str], **extra) -> dict:
+    callout = {"kind": kind, "text": "CALLOUT"} | (
+        {"x": "Central"} if kind != "note" else {}
+    )
+    return {
+        "intent": {
+            "visual_type": "bar",
+            "headline": "Central has the most visits",
+            "headline_status": "draft",
+            "fields": {"x": "branch", "y": "visits"},
+            "callouts": [callout],
+        },
+        "data": {"inline": "branch,visits\nCentral,212\nEastgate,96\nNorth,88\n"},
+        "source": "Invented",
+        "as_of": "2026-09-30",
+        "targets": targets,
+        **extra,
+    }
+
+
+@pytest.mark.parametrize("kind", ["point", "rule"])
+@pytest.mark.parametrize("target", ["md/document", "html/document", "image/slide"])
+def test_bar_point_and_rule_callouts_fail_where_not_drawn(kind, target) -> None:
+    """C11: bars drawn by Vega-Lite dropped these, yet the check passed (tour)."""
+    res = render.render(_bar_request(kind, [target]), FIXTURE, dry_run=True)
+    check = res["checks"]["callouts"]
+    assert check["status"] == "fail", check
+    assert (
+        "bar charts don't draw point or rule callouts yet; use a note"
+        in check["detail"]
+    )
+
+
+@pytest.mark.parametrize(
+    ("kind", "technique"), [("note", None), ("point", "mermaid"), ("rule", "table")]
+)
+def test_bar_callouts_pass_where_listed_as_notes(kind, technique, tmp_path) -> None:
+    extra = {"technique": {"md/document": technique}} if technique else {}
+    req = _bar_request(kind, ["md/document"], out_dir=str(tmp_path), **extra)
+    res = render.render(req, FIXTURE)
+    assert res["checks"]["callouts"]["status"] == "pass", res["checks"]["callouts"]
+    assert "CALLOUT" in res["outputs"]["md/document"]["snippet"]  # shown, as a note
+
+
+def test_line_point_callouts_still_pass() -> None:
+    req = _bar_request("point", ["html/document"])
+    req["intent"]["visual_type"] = "line"
+    res = render.render(req, FIXTURE, dry_run=True)
+    assert res["checks"]["callouts"]["status"] == "pass", res["checks"]["callouts"]

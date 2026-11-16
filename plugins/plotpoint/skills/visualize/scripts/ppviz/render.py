@@ -189,12 +189,12 @@ def render(
         capacity_notes += [
             f"{target}: {n}" for n in shaped.notes if "capacity" in n or "exceed" in n
         ]
-        st, detail = checks.callouts(intent, shaped)
+        st, detail = checks.callouts(intent, shaped, technique)
         callout_checks.setdefault(f"{st}: {detail}", target)
         notes = [
             _one_line(c["text"])
             for c in intent.get("callouts") or []
-            if c["kind"] == "note" or vt in TEXTUAL
+            if c["kind"] == "note" or vt in TEXTUAL or technique in ("table", "text")
         ]
         notes += [n for n in shaped.notes if n.startswith("Excluded")]
         try:

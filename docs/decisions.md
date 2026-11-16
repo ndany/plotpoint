@@ -182,6 +182,9 @@ nothing drawn; text and table outputs turn every callout into a note.
 **Alternatives:** skip unmatched callouts (the original behavior).
 **Rationale:** the first mode C run had three charts whose checks passed while
 the callout carrying the headline's evidence had silently disappeared.
+Since 2026-11-15 (C11) it also fails on rule and point callouts on bar and
+stacked bar charts drawn by Vega-Lite, which never drew them (the tour found
+them silently missing), and table outputs list them as notes like Mermaid.
 **Revisit:** if label placement becomes configurable (`HANDOFF.md` backlog).
 
 ## D-21: Outlier handling per column
