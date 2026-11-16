@@ -44,7 +44,7 @@ storyboard must **order**, **merge**, **demote**, **cut**, place by
 | --- | --- | --- |
 | Deterministic | Engine output, schemas, checks, sizes, colors | `pytest`, every commit and CI (ubuntu, macOS, Windows) |
 | Render validity | Mermaid parses and renders | `pytest` with the Mermaid CLI; skipped with a notice where it's missing |
-| Model behavior | Storyboard and mode C decisions | Recorded runs (below); not in CI |
+| Model behavior | Storyboard and mode C decisions | Recorded runs (`scripts/record_run.py`, below; `test_record_run.py` tests the harness); not in CI |
 | Visual review | Clipping, overlap, legibility, whether the claim is visible | By looking at rendered output; findings in the skill's `DESIGN.md` |
 | Viewer check | VS Code and GitHub render the Mermaid output | Manual, when the Mermaid version changes |
 
@@ -87,25 +87,50 @@ every platform.
 Model behavior can't be unit-tested, so runs are recorded and their results kept
 honest by tests.
 
-1. Copy the fixture to a scratch folder and **remove** the answer files
-   (`storyboard-golden.yaml`, `expected.md`, `render-data.yaml`).
-   Copy the skill folder in too, without `DESIGN.md` (it holds past test
-   findings).
-2. Run the skill in a **fresh session or sub-agent that hasn't seen the design
-   or the answers**, given only the skill folder and the request. Ask it for the
-   result plus a "Skill feedback" section in `notes.md`. Its brief says what not
-   to open: the repository (its `docs/`, `tests/` and any `runs/` folder),
-   `DESIGN.md`, `docs/plans/`, the answer files by name, and any notes from
-   earlier tests; it reads only the scratch folder, and says in `notes.md` if it
-   opened anything else. Afterwards, check its transcript for reads outside the
-   scratch folder and record the result in `notes.md`.
-3. Save the outputs to `tests/fixtures/library-review/runs/<date>-<test>/`:
-   `storyboard-result.yaml` (T1, T2), `notes.md`, and for T3 the render requests.
-4. `pytest` checks every saved storyboard result against E1–E12
+Run it with the harness (D-34), in the terminal from the repo root:
+
+```bash
+scripts/record_run.py T2                     # T1 mode A, T2 mode B, T3 mode C
+scripts/record_run.py D --storyboard tests/fixtures/library-review/runs/<run>/storyboard-result.yaml
+scripts/record_run.py SETUP                  # no dependencies: setup message, then stop
+```
+
+Each run costs under a dollar so far (`--budget` caps it, default 5 USD; `--model`, default
+`sonnet`). The harness:
+
+1. Copies the fixture to `../plotpoint-runs/<date>-<test>/`, outside the repo,
+   **without** the answer files (`storyboard-golden.yaml`, `expected.md`,
+   `render-data.yaml`), `runs/`, and `requests/` (its reference intents; only
+   SETUP keeps it), plus the plugin without `DESIGN.md` (past test findings).
+2. Runs a headless `claude -p` session there with the blind brief: work only in
+   this folder; don't open the repo, `DESIGN.md`, `docs/plans/`, the answer
+   files or earlier notes; write `notes.md` with drafts, decisions, anything
+   opened outside, and a "Skill feedback" section. Only the copied plugin is
+   loaded (`--plugin-dir`), and the user's own settings and plugins aren't
+   (`--setting-sources project,local`). Dependencies come from the skill's
+   one-time setup, the per-user cache venv, as for any user; the harness stops
+   with the setup commands if it's missing. (A venv on `PATH` isn't enough: a
+   shell alias for `python3` overrides it.) SETUP needs a machine with neither
+   the cache venv nor uv.
+3. Audits the transcript: every file a tool opened, listed or ran outside the
+   scratch folder, and any mention of an answer file. Home and scratch paths
+   are replaced (`~`, `<scratch>`) before anything is saved.
+4. Saves `notes.md` (audit first, then the session's notes) and the outputs
+   (`storyboard-result.yaml` for T1 and T2, `r1.yaml`–`r5.yaml` for T3) to
+   `tests/fixtures/library-review/runs/<date>-<test>/`. The full transcript
+   stays in the scratch folder.
+
+Then read the session's notes and look at what it rendered (the scratch
+folder keeps the files). You can still run a test by hand in a new session
+with the same brief; save it the same way.
+
+After the run:
+
+1. `pytest` checks every saved storyboard result against E1–E12
    (`scripts/score_storyboard.py RESULT` scores one by hand). If a run
    misses an expectation for a reason you accept, list it in that run's
    `known-misses.txt` (`E5 reason...`) and record why in `notes.md`.
-5. Act on the skill feedback: fix the instructions, then re-run.
+2. Act on the skill feedback: fix the instructions, then re-run.
 
 ## Worked example
 

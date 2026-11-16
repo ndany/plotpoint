@@ -420,3 +420,28 @@ v3; they now use them as written (v1 slide hash refreshed after looking; T2b's
 recorded run is a known miss).
 **Revisit:** if callers want to allow edits by listing approved wordings, or a
 visual commonly answers several questions.
+
+## D-34: Recorded runs are automated with a headless harness
+
+**Chosen:** `scripts/record_run.py` runs each model test (T1–T3, D, SETUP) as
+a headless `claude -p` session in a scratch copy outside the repo, without the
+answer files and with only the plugin under test loaded. It audits the
+transcript for anything opened outside the scratch folder and saves the
+outputs and notes under `runs/`, where pytest scores them. Changes how D-19
+is carried out, not what it requires.
+**Alternatives:** a person runs each test in a new VS Code session (slow, and
+the step most often skipped); `--bare` isolation (needs an API key: it never
+reads the subscription login); blocking reads outside the folder by setting
+(`blockReadsOutsideWorkingDirectories` isn't in every Claude Code version yet,
+and doesn't cover shell commands, so the audit is still needed).
+**Rationale:** re-running every test after each skill change is what keeps the
+instructions honest; it only happens if it's one command.
+Runs use the skill's own per-user cache venv (the one-time setup in its
+message), so they see the machine as a user does.
+**Cost:** under a dollar per run so far (`--budget` caps it); SETUP can only run
+where the skill was never set up. The audit reads tool inputs, so a shell
+command that builds a path indirectly could slip past it; the brief also asks
+the session to report what it opened. Launching `claude` needs one lint
+suppression (`# noqa: S603`, justified inline; five in the repo now).
+**Revisit:** when `--bare` works with a subscription login, or Claude Code can
+confine shell commands to a folder.
