@@ -1,0 +1,121 @@
+visuals:
+  - id: v1
+    questions: [q1]
+    datasets: [loans_print, loans_ebook]
+    audience: [board, managers]
+    placement: summary
+    intent:
+      visual_type: line
+      rationale: "Change over time; two series, the story is both a total fall and e-book's distinct recovery"
+      headline: "Total loans fell 18% during the renovation; e-book loans have since recovered and grown"
+      headline_status: confirmed
+      fields: {x: quarter, y: [print, ebook], names: {print: Print, ebook: E-book}}
+      highlight: [ebook]
+      callouts:
+        - {kind: rule, x: "Q2 '26", text: "Q2 renovation\nTotal 1,230 → 1,008 (−18%)"}
+      outlier_handling: {method: none_flagged}
+      units: "Loans (thousands)"
+    data: {path: data/derived/loans_by_quarter.csv}
+    data_note: "Join print and e-book loans on quarter"
+    renderings:
+      md/document: {technique: svg}
+      html/document: {technique: svg}
+
+  - id: v2
+    questions: [q2]
+    datasets: [members]
+    audience: [board]
+    placement: summary
+    intent:
+      visual_type: number
+      rationale: "A single headline figure is enough for a decision-maker; no trend dataset covers active use directly"
+      headline: "Active membership grew to 48,210, up from 46,700"
+      headline_status: draft
+      fields: {value: value, label: metric, previous: previous}
+      outlier_handling: {method: none_flagged}
+    renderings:
+      md/document: {technique: text}
+      html/document: {technique: text}
+
+  - id: v3
+    questions: [q3]
+    datasets: [branch_waits]
+    audience: [board, managers]
+    placement: summary
+    intent:
+      visual_type: scatter
+      rationale: "Staffing level vs wait time across branches; the story is one branch far off the pattern of its peers"
+      headline: "Riverside's average wait is far above every other branch at similar staffing"
+      headline_status: confirmed
+      fields:
+        x: staff_fte
+        y: avg_wait_min
+        label: branch
+        names: {staff_fte: "Staff (FTE)", avg_wait_min: "Average wait (minutes)"}
+      highlight: [Riverside]
+      callouts:
+        - {kind: point, series: "Eastgate", text: "Eastgate: 4.5 FTE, 15 min wait"}
+      outlier_handling:
+        - {column: avg_wait_min, method: callout, reason: "Riverside's wait is the finding"}
+        - {column: staff_fte, method: accept, reason: "Central's size is real; noted"}
+    renderings:
+      md/document: {technique: svg}
+      html/document: {technique: svg}
+
+  - id: v4
+    questions: [q3]
+    datasets: [branch_overview]
+    audience: [managers]
+    placement: appendix
+    intent:
+      visual_type: table
+      rationale: "Four measures across twelve branches have no single takeaway; a table carries the full breakdown that practitioners need"
+      headline: "Branch-by-branch overview: visits, open hours, staffing and events"
+      headline_status: title
+      fields:
+        columns: [branch, visits_k, open_hours, staff_fte, events]
+        names: {branch: Branch, visits_k: "Visits (k)", open_hours: "Open hours", staff_fte: "Staff (FTE)", events: Events}
+        sort: value
+      highlight: [Riverside]
+    renderings:
+      md/document: {technique: table}
+      html/document: {technique: table}
+
+  - id: v5
+    questions: [q4]
+    datasets: [wait_minutes]
+    audience: [managers]
+    placement: body
+    intent:
+      visual_type: histogram
+      rationale: "Distribution of individual visit waits; the shape and tail matter more than any single value"
+      headline: "82% of visits wait 15 minutes or less, but some stretch to 47.5"
+      headline_status: draft
+      fields: {value: wait_min, names: {count: "Visits"}}
+      outlier_handling: {method: accept, reason: "The long tail up to 47.5 minutes is real and expected for a histogram"}
+      units: "Wait (minutes)"
+    renderings:
+      md/document: {technique: svg}
+      html/document: {technique: svg}
+
+recommendations:
+  - kind: merge
+    detail: "Print and e-book loans share the same quarters and measure family — one line chart tells the loans story better than two separate bar charts"
+    affects: [v1]
+  - kind: order
+    detail: "q1's loans finding leads: it's the headline conclusion and matches the write-up's title and focus on the renovation"
+    affects: [v1]
+  - kind: cut
+    detail: "Café revenue measures sales, not people — it doesn't answer 'how many people actively use the library', so it's dropped; the number comes from active membership alone"
+    affects: [cafe_sales]
+  - kind: demote
+    detail: "branch_overview has four measures across twelve branches with no single takeaway; shown as a sortable table in the appendix rather than a 48-bar grouped chart"
+    affects: [v4]
+  - kind: placement
+    detail: "Riverside's staffing gap bears on a resourcing decision (where to add staff), so v3's audience is widened from managers-only to board+managers and placed in summary rather than body"
+    affects: [v3]
+
+color_map:
+  E-book: accent
+  Print: context
+  Riverside: accent

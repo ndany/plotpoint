@@ -1,0 +1,1 @@
+E8 v3 (q3 scatter) widened from managers to board+managers and placed in summary; flagged as a caller decision in notes.md. Pending maintainer review (2026-11-16)

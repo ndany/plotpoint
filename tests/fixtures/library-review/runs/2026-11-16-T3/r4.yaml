@@ -1,0 +1,18 @@
+id: r4
+question: "Which branches need more staff?"
+takeaway: "Riverside's average wait is far above every other branch at similar staffing"
+intent:
+  visual_type: scatter
+  rationale: "Visits against staffing per branch; Riverside carries high visit load on low staffing, the operational root of the wait finding"
+  headline: "Riverside's average wait is far above every other branch at similar staffing"
+  headline_status: confirmed
+  fields: {x: staff_fte, y: visits_k, label: branch, names: {staff_fte: "Staff (FTE)", visits_k: "Visits (thousands)"}}
+  highlight: [Riverside]
+  outlier_handling:
+    - {column: staff_fte, method: accept, reason: "Central's size is real; noted"}
+    - {column: visits_k, method: accept, reason: "Central's size is real; noted"}
+data: {path: data/branch_overview.json}
+source: "Branch operations report"
+as_of: 2026-09-30
+targets: [md/document, html/document]
+out_dir: figures/r4

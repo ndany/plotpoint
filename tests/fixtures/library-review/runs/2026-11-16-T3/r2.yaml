@@ -1,0 +1,14 @@
+id: r2
+question: "How many people actively use the library?"
+intent:
+  visual_type: number
+  rationale: "Single headline metric; one row, no categories to compare"
+  headline: "Active members reached 48,210, up 3% from 46,700 a year earlier"
+  headline_status: draft
+  fields: {value: value, label: metric, previous: previous}
+  outlier_handling: {method: none_flagged}
+data: {inline: "metric,value,previous\nActive members,48210,46700\n"}
+source: "Membership system"
+as_of: 2026-09-30
+targets: [md/document, html/document]
+out_dir: figures/r2

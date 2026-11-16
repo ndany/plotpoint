@@ -1,0 +1,126 @@
+visuals:
+  - id: v1
+    questions: [q1]
+    datasets: [loans_print, loans_ebook]
+    audience: [board, managers]
+    placement: summary
+    data: {path: data/derived/loans_by_quarter.csv}
+    data_note: "Join print and e-book loans on quarter"
+    intent:
+      visual_type: line
+      rationale: "Change over time; two series, the story is about one (e-book) against total loans"
+      headline: "Total loans fell 18% during the renovation; e-book loans have since recovered and grown"
+      headline_status: confirmed
+      fields: {x: quarter, y: [print, ebook], names: {print: Print, ebook: E-book}}
+      highlight: [ebook]
+      callouts:
+        - {kind: rule, x: "Q2 '26", text: "Q2 renovation\nTotal 1,230 → 1,008 (−18%)"}
+      outlier_handling: {method: none_flagged}
+      units: "Loans (thousands)"
+    renderings:
+      md/document: {technique: svg, compensations: ["drawn as svg, not mermaid, so the total-loans callout stays on the chart"]}
+      html/document: {technique: svg}
+
+  - id: v2
+    questions: [q2]
+    datasets: [members]
+    audience: [board]
+    placement: summary
+    intent:
+      visual_type: number
+      rationale: "Single figure answers 'how many actively use the library'; decision-makers want it first"
+      headline: "Active membership grew to 48,210, up from 46,700"
+      headline_status: draft
+      fields: {value: value, previous: previous, label: metric}
+      outlier_handling: {method: none_flagged}
+    renderings:
+      md/document: {technique: text}
+      html/document: {technique: text}
+
+  - id: v3
+    questions: [q3]
+    datasets: [branch_waits]
+    audience: [managers]
+    placement: body
+    intent:
+      visual_type: scatter
+      rationale: "Correlation question (wait vs. staffing) across branches; the outlier is the finding"
+      headline: "Riverside's average wait is far above every other branch at similar staffing"
+      headline_status: confirmed
+      fields: {x: staff_fte, y: avg_wait_min, label: branch, names: {staff_fte: "Staff (FTE)", avg_wait_min: "Average wait (minutes)"}}
+      highlight: [Riverside]
+      outlier_handling:
+        - {column: staff_fte, method: accept, reason: "Central's size is real; noted"}
+        - {column: avg_wait_min, method: callout, reason: "Riverside's wait is the finding"}
+    renderings:
+      md/document: {technique: svg}
+      html/document: {technique: svg, compensations: ["vega would add hover for the other 10 branches, but svg keeps the fragment script-free"]}
+
+  - id: v4
+    questions: [q4]
+    datasets: [wait_minutes]
+    audience: [managers]
+    placement: body
+    intent:
+      visual_type: histogram
+      rationale: "Distribution question; one numeric column across 300 individual visits"
+      headline: "Median wait is 7.8 minutes, and 82% of visits are within 15 minutes"
+      headline_status: draft
+      fields: {value: wait_min, bins: 20, names: {count: Visits}}
+      callouts:
+        - {kind: note, text: "Longest wait: 47.5 minutes"}
+      outlier_handling: {method: callout, reason: "the long tail of slow visits (10 of 300, 27+ minutes) is part of the story"}
+      units: "Wait (minutes)"
+    renderings:
+      md/document: {technique: svg}
+      html/document: {technique: svg}
+
+  - id: v5
+    questions: [q3]
+    datasets: [branch_overview, branch_waits]
+    audience: [managers]
+    placement: appendix
+    data: {path: data/derived/branch_detail.csv}
+    data_note: "Join branch_overview and branch_waits on branch (both carry staff_fte; values agree)"
+    intent:
+      visual_type: table
+      rationale: "Four measures across twelve branches with no single takeaway: reference detail, not a chart"
+      headline: "Branch detail: visits, hours, staffing, events and average wait"
+      headline_status: title
+      fields:
+        columns: [branch, visits_k, open_hours, staff_fte, events, avg_wait_min]
+        sort: data
+        names: {visits_k: "Visits (k)", open_hours: "Open hours", staff_fte: "Staff (FTE)", events: "Events", avg_wait_min: "Avg. wait (min)"}
+      highlight: [Riverside]
+      outlier_handling: {method: accept, reason: "table shows every branch's exact values; no handling needed"}
+    renderings:
+      md/document: {technique: table}
+      html/document: {technique: table}
+
+recommendations:
+  - kind: merge
+    detail: "Replace the two 'Loans' bar charts (print, e-book) with one line chart over the five quarters (v1): same x-axis and measure, and the story is their divergence, not either alone."
+    affects: [v1]
+  - kind: cut
+    detail: "Café revenue answers no question in the request (no question asks about café sales or revenue); drop the 'Café revenue' section. If the board does want it kept as general context, it needs its own question and takeaway first."
+    affects: [cafe_sales]
+  - kind: demote
+    detail: "The draft's 'grouped bar chart of four measures for twelve branches (48 bars)' has no single takeaway and won't fit the capacity limit (12 bars max per measure); use the appendix table (v5) instead, merged with the wait-time data the draft already planned to put in an appendix."
+    affects: [v5]
+  - kind: merge
+    detail: "branch_overview and branch_waits both describe the twelve branches (and already agree on staff_fte); merge them into one appendix table (v5) instead of a branch overview table plus a separate wait-time appendix."
+    affects: [v5]
+  - kind: add-summary
+    detail: "Membership (v2) is the only direct answer to 'how many people actively use the library' for the board; give it a one-number summary visual rather than leaving it as a sentence in prose."
+    affects: [v2]
+  - kind: placement
+    detail: "q3 (staffing) and q4 (wait distribution) are audience: managers only in the request, so v3 and v4 are placed in body, not summary, even though v3 is the finding the 'Conclusion' section leads with ('Riverside needs attention'). If the board should see the staffing finding too, add board to q3's audience and promote v3 to summary — that's the caller's call."
+    affects: [v3, v4]
+  - kind: rendering
+    detail: "v1's total-loans callout carries the headline's '18%' figure, so it is drawn as svg (not mermaid) in Markdown, per the rule that a callout carrying a headline number needs svg."
+    affects: [v1]
+
+color_map:
+  Print: context
+  E-book: accent
+  Riverside: accent

@@ -1,0 +1,15 @@
+id: r5
+question: "How long do visitors wait for help?"
+intent:
+  visual_type: histogram
+  rationale: "Distribution of individual wait times across many visits"
+  headline: "Half of visits wait under 7.8 minutes, and 82% are seen within 15 minutes"
+  headline_status: draft
+  fields: {value: wait_min, bins: 20, names: {count: Visits}}
+  outlier_handling: {method: accept, reason: "The long-wait tail (up to 47.5 min) is part of the distribution and visible in the histogram"}
+  units: "Wait (minutes)"
+data: {path: data/wait_minutes.csv}
+source: "Branch visit survey, individual visits"
+as_of: 2026-09-30
+targets: [md/document, html/document]
+out_dir: figures/r5
