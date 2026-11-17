@@ -95,8 +95,12 @@ scripts/record_run.py D --storyboard tests/fixtures/library-review/runs/<run>/st
 scripts/record_run.py SETUP                  # no dependencies: setup message, then stop
 ```
 
-Each run costs under a dollar so far (`--budget` caps it, default 5 USD; `--model`, default
-`sonnet`). The harness:
+Each run is a Claude Code session on your own login. On a Claude subscription
+it counts toward the plan's usage limits; with an API key
+(`ANTHROPIC_API_KEY`) it's billed per token. The harness records Claude Code's
+own cost estimate in the run's notes: $0.80–$1.80 per run on 2026-11-16 with
+Sonnet (`--model`, default `sonnet`); `--budget` (default 5 USD) stops a run
+at that estimate. The harness:
 
 1. Copies the fixture to `../plotpoint-runs/<date>-<test>/`, outside the repo,
    **without** the answer files (`storyboard-golden.yaml`, `expected.md`,

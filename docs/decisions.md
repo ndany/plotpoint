@@ -438,7 +438,9 @@ and doesn't cover shell commands, so the audit is still needed).
 instructions honest; it only happens if it's one command.
 Runs use the skill's own per-user cache venv (the one-time setup in its
 message), so they see the machine as a user does.
-**Cost:** under a dollar per run so far (`--budget` caps it); SETUP can only run
+**Cost:** each run uses the maintainer's Claude login: plan usage on a
+subscription, billed tokens with an API key (estimated $0.80–$1.80 per run on
+2026-11-16; `--budget` caps it). SETUP can only run
 where the skill was never set up. The audit reads tool inputs, so a shell
 command that builds a path indirectly could slip past it; the brief also asks
 the session to report what it opened. Launching `claude` needs one lint

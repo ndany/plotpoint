@@ -14,7 +14,9 @@ session there with the blind brief and only that plugin loaded; audits the
 transcript for anything opened outside the scratch folder; and saves the
 result, the session's notes and the audit to
 tests/fixtures/library-review/runs/<date>-<test>/. Scoring is pytest's job
-(tests/test_storyboard_runs.py). Standard library only.
+(tests/test_storyboard_runs.py). Each run uses your Claude login: plan usage
+on a subscription, billed tokens with an API key (docs/testing.md). Standard
+library only.
 """
 
 from __future__ import annotations
