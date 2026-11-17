@@ -145,9 +145,13 @@ What was unclear, wrong, or missing while using the skill as a first-time user:
   derivability rules, outlier-handling methods, capacity limits) matched the
   docs exactly and the dry-run checks were trustworthy — no surprises there.
 
-## Maintainer review (pending)
+## Maintainer review (2026-11-16)
 
 E8 miss: v3 widens q3's audience to the board and places the scatter in
 `summary`, and asks the caller to confirm (decision 3 above). Listed in
 `known-misses.txt` so the suite stays green until the maintainer decides
 whether this is acceptable judgment or a miss to fix in the instructions.
+Decision (2026-11-17): the move followed `references/storyboard.md`, which
+said to widen and then recommend. That applied a change to the caller's own
+input before the caller agreed, so the instructions now say to propose it
+only (D-35). E8 stays a known miss for this run until T2 is re-run.

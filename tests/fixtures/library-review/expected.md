@@ -17,7 +17,7 @@ What a correct storyboard (modes A and B) and correct single-visual decisions
 | E5 | **Demote:** `branch_overview` is shown as a `table`, or recommended for demotion | Four measures × twelve branches, no single story |
 | E6 | **Outlier:** every chart (not table) using `branch_waits` handles the wait outlier explicitly (not `none_flagged`) and highlights or calls out Riverside | Riverside's 48-minute wait |
 | E7 | **Drafts:** visuals for `q2` and `q4` (no takeaway given) have `headline_status: draft` | Never invent conclusions |
-| E8 | **Audience:** detail visuals for `q3` and `q4` are for `managers` only and placed in `body` or `appendix` (a summary `sentence` or `number` for the board is allowed on top) | Practitioner detail |
+| E8 | **Audience:** detail visuals for `q3` and `q4` are for `managers` only and placed in `body` or `appendix`. Showing the board anything for them is proposed as a recommendation (`add-summary` or `placement`), not added to the plan (D-35) | Practitioner detail; the caller decides audiences |
 | E9 | **Rendering:** every visual plans a technique for every requested target. (Whether techniques differ is a judgment; differential rendering itself is tested deterministically in T4) | Per-format planning |
 | E10 | Mermaid is only planned for `line` or `bar` visuals | Renderer support |
 | E11 | Every number in each headline is derivable from that visual's data (`headline_numbers` check) | Accuracy |

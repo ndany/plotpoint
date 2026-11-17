@@ -39,7 +39,9 @@ renderer test Mermaid output.
    plan will render. For large write-ups in Claude Code or Cowork, run this in a
    sub-agent and keep only the result.
 3. **Decide:** review the recommendations. Order, merges, cuts and placement are
-   advice; apply what you agree with. Confirm or rewrite `draft` headlines.
+   advice; apply what you agree with. Your audiences stay as you gave them:
+   showing something to a wider audience comes as a proposal (`add-summary`
+   or `placement`). Confirm or rewrite `draft` headlines.
 4. **Render** (mode D): for each visual you keep, write a render request with its
    intent, the data file (the visual's `data` when the storyboard names one,
    e.g. a merge you build per its `data_note`), the targets, and the

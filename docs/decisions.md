@@ -447,3 +447,28 @@ the session to report what it opened. Launching `claude` needs one lint
 suppression (`# noqa: S603`, justified inline; five in the repo now).
 **Revisit:** when `--bare` works with a subscription login, or Claude Code can
 confine shell commands to a folder.
+
+## D-35: The caller's audiences are proposed to, never changed
+
+**Chosen:** a storyboard keeps each question's audiences. It may narrow
+them for practitioner detail, but showing a visual to a wider audience is a
+recommendation: `add-summary` (a one-line `sentence` or `number` for the
+decision-makers) or `placement` (the visual itself), with the reason. The
+plan changes only when the caller accepts. E8 now fails any q3 or q4 visual
+for the board, including a summary sentence it used to allow.
+**Alternatives:** accept a widening the result states (the 2026-11-16 T2
+run did this, following the instructions of the time: it applied the change,
+then asked); relax E8 to allow a widened summary visual; leave audiences to
+the model's judgment (needs a rule for when widening is right, which can't be
+written generically).
+**Rationale:** plotpoint advises and the caller decides. Audiences, like a
+takeaway (D-33), are something the caller stated, so a change to them waits
+for the caller's yes. "Who decides" is a rule that holds in any domain;
+"when to widen" isn't.
+**Cost:** one more confirmation when the caller would have agreed. Two saved
+runs (T2b, 2026-11-16 T2) followed the old instruction and list E8 as a known
+miss. Needs re-running T1 and T2. The model may still apply a widening; E8
+catches it in recorded runs, not in a real caller's plan.
+**Revisit:** if callers accept nearly every widening (then apply and mark
+it, as with drafts), or a check on real plans is wanted (compare a result's
+audiences with the request's).

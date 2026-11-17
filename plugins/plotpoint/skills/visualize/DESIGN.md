@@ -120,3 +120,10 @@ Observed, no change: the q3 detail scatter went in the board summary in mode A
 (the E8 miss) but in the body, under a board summary sentence, in mode B. This
 is run-to-run variance on a judgment call; compare it with future recorded
 runs before acting.
+
+### 2026-11-16: recorded runs after the critical fixes (harness)
+
+| Finding (run) | Change |
+| --- | --- |
+| T2 put the q3 staffing scatter in the board summary and asked the caller to confirm, as `storyboard.md` said (widen, then recommend). Same as the tour's mode A run above, now seen twice | Audiences are the caller's: the plan keeps them and any widening is a recommendation (`add-summary` or `placement`). E8 no longer allows a board summary in the plan (D-35) |
+| The audience example ("where to add staff") was the fixture's own q3 (T2 feedback) | Replaced with an example from another invented domain; the rest of the examples are a Backlog row |

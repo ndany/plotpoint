@@ -23,10 +23,10 @@ every dataset it uses.
 
 ## Audiences and placement
 
-Audiences come from the write-up; each question names its own. A visual
-inherits its question's audiences. Narrow it for detail only practitioners need;
-widen it when a decision depends on it (below), and say so in a `placement`
-recommendation.
+Audiences come from the write-up; each question names its own, and the caller
+decides them. A visual inherits its question's audiences. You may narrow them
+(detail only practitioners need goes to them alone), but never widen them in
+the plan: propose it instead (below).
 
 | Placement | For | Contents |
 | --- | --- | --- |
@@ -34,10 +34,17 @@ recommendation.
 | `body` | The main readers | Supporting evidence; practitioner detail |
 | `appendix` | Reference | Tables and full breakdowns |
 
-Audience changes the level of detail, not the facts. A question that bears on
-a decision (for example, where to add staff) belongs in front of the
-decision-makers too: give it a `summary` visual, or a `sentence` visual (a
-one-line finding with source), even when its detail is for practitioners.
+Audience changes the level of detail, not the facts. When a question scoped to
+practitioners bears on a decision (for example, a fleet manager's question
+about which delivery vans are due for replacement, when replacing them is a
+budget decision), the decision-makers may need to see it too. Don't add them
+to the plan; recommend it, and let the caller decide:
+
+- `add-summary`: a one-line `sentence` or `number` for the decision-makers,
+  with the question it answers and why it bears on their decision.
+- `placement`: showing them the visual itself, and why.
+
+The plan keeps the caller's audiences until the caller accepts.
 
 ## With a draft (mode A)
 

@@ -97,14 +97,10 @@ def evaluate(result: dict[str, Any]) -> dict[str, tuple[bool, str]]:
     ]
     out["E7"] = (bool(drafts) and all(drafts), f"q2/q4 draft flags: {drafts}")
 
-    detail = [  # a one-line summary for decision-makers is allowed on top
+    detail = [  # widening is proposed, never applied (D-35)
         (v["id"], v["audience"], v["placement"])
         for q in ("q3", "q4")
         for v in _for_question(result, q)
-        if not (
-            v["placement"] == "summary"
-            and v["intent"]["visual_type"] in ("sentence", "number")
-        )
     ]
     ok = bool(detail) and all(
         a == ["managers"] and p in ("body", "appendix") for _, a, p in detail
