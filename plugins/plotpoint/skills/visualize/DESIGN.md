@@ -127,3 +127,13 @@ runs before acting.
 | --- | --- |
 | T2 put the q3 staffing scatter in the board summary and asked the caller to confirm, as `storyboard.md` said (widen, then recommend). Same as the tour's mode A run above, now seen twice | Audiences are the caller's: the plan keeps them and any widening is a recommendation (`add-summary` or `placement`). E8 no longer allows a board summary in the plan (D-35) |
 | The audience example ("where to add staff") was the fixture's own q3 (T2 feedback) | Replaced with an example from another invented domain; the rest of the examples are a Backlog row |
+
+### 2026-11-17: T1 and T2 after D-35
+
+| Finding (run) | Change |
+| --- | --- |
+| Both runs kept q3 for managers and proposed the board view as `add-summary` (T1, T2) | None: D-35 works |
+| Whether a practitioner-only visual may go in `summary` wasn't stated; T1 chose `body`, T2 `summary` and flagged it (T1, T2 feedback) | `summary` is the decision-makers' read (D-36); T2 re-run 2026-11-18 |
+| `spec.md`'s examples are the fixture's answers (T1 feedback, second time) | Backlog row (examples rewrite) |
+| A bare count of a subset isn't matched while its share is (T2) | Backlog, small docs row |
+| 2026-11-18 T2 re-run: managers-only scatter in `body`, board view proposed; meets E1–E12. Feedback: no worked `add-summary` example; `callout` method vs `callouts` field; where derived files go | Backlog, small docs row |

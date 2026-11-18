@@ -1,0 +1,121 @@
+visuals:
+  - id: v1
+    questions: [q1]
+    datasets: [loans_print, loans_ebook]
+    audience: [board, managers]
+    placement: summary
+    data: {path: data/derived/loans_by_quarter.csv}
+    data_note: "Join print and e-book loans on quarter"
+    intent:
+      visual_type: line
+      rationale: "Change over time; two series, the story is about one (e-book) against a total decline"
+      headline: "Total loans fell 18% during the renovation; e-book loans have since recovered and grown"
+      headline_status: confirmed
+      fields:
+        x: quarter
+        y: [print, ebook]
+        names: {print: Print, ebook: E-book}
+      highlight: [ebook]
+      callouts:
+        - {kind: rule, x: "Q2 '26", text: "Q2 renovation\nTotal 1,230 -> 1,008 (-18%)"}
+      outlier_handling: {method: none_flagged}
+      units: "Loans (thousands)"
+    renderings:
+      md/document: {technique: svg}
+      html/document: {technique: svg}
+
+  - id: v2
+    questions: [q2]
+    datasets: [members]
+    audience: [board]
+    placement: summary
+    intent:
+      visual_type: number
+      rationale: "Single headline figure for a decision-maker question; no comparison series needed"
+      headline: "Active membership rose 3.2% to 48,210, up from 46,700"
+      headline_status: draft
+      fields: {value: value, previous: previous, label: metric}
+      outlier_handling: {method: none_flagged}
+    renderings:
+      md/document: {technique: text}
+      html/document: {technique: text}
+
+  - id: v3
+    questions: [q3]
+    datasets: [branch_waits]
+    audience: [managers]
+    placement: summary
+    intent:
+      visual_type: scatter
+      rationale: "Do two measures move together? Staffing vs. wait, to show Riverside is the outlier at its staffing level"
+      headline: "Riverside's average wait is far above every other branch at similar staffing"
+      headline_status: confirmed
+      fields:
+        x: staff_fte
+        y: avg_wait_min
+        label: branch
+        names: {staff_fte: "Staff (FTE)", avg_wait_min: "Average wait (minutes)"}
+      highlight: [Riverside]
+      outlier_handling:
+        - {column: staff_fte, method: accept, reason: "Central's staffing is real; noted but not the finding"}
+        - {column: avg_wait_min, method: callout, reason: "Riverside's wait is the finding"}
+    renderings:
+      md/document: {technique: svg}
+      html/document: {technique: svg}
+
+  - id: v4
+    questions: [q3]
+    datasets: [branch_overview]
+    audience: [managers]
+    placement: appendix
+    intent:
+      visual_type: table
+      rationale: "Four measures across twelve branches with no single takeaway; a reference table, not a chart"
+      headline: "Branch operations overview: visits, open hours, staffing and events"
+      headline_status: title
+      fields:
+        columns: [branch, visits_k, open_hours, staff_fte, events]
+        sort: value
+        names: {visits_k: "Visits (k)", open_hours: "Open hours", staff_fte: "Staff (FTE)"}
+      highlight: [Riverside]
+    renderings:
+      md/document: {technique: table}
+      html/document: {technique: table}
+
+  - id: v5
+    questions: [q4]
+    datasets: [wait_minutes]
+    audience: [managers]
+    placement: body
+    intent:
+      visual_type: histogram
+      rationale: "How are values spread out? 300 individual visit waits; the question is about the shape, including the tail"
+      headline: "Half of visitors wait under 7.8 minutes, but about 18% wait 15 minutes or more"
+      headline_status: draft
+      fields:
+        value: wait_min
+        bins: 20
+        names: {count: Visits}
+      callouts:
+        - {kind: rule, x: 30, text: "2.3% of visits\nwaited 30+ minutes"}
+      outlier_handling: {method: callout, reason: "Long waits are the finding worth flagging, not noise to hide"}
+      units: "Wait (minutes)"
+    renderings:
+      md/document: {technique: svg}
+      html/document: {technique: svg}
+
+recommendations:
+  - kind: cut
+    detail: "Café revenue measures spending, not how many people actively use the library; it doesn't answer q2"
+    affects: [cafe_sales]
+  - kind: add-summary
+    detail: "Riverside's severe understaffing (q3) bears on a staffing budget decision; the board may need a one-line summary or the scatter itself, not just managers"
+    affects: [v3]
+  - kind: merge
+    detail: "branch_waits and branch_overview share staff_fte; the appendix table could also carry avg_wait_min so managers see staffing, visits and wait together in one place"
+    affects: [v4]
+
+color_map:
+  E-book: accent
+  Print: context
+  Riverside: accent

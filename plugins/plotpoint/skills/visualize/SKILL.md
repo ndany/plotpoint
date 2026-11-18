@@ -44,7 +44,8 @@ Specs and field meanings: `references/spec.md`. Validate anything you write:
    - **Merge** datasets that tell one story; **demote** visuals with no single
      takeaway to tables; **cut** datasets that answer no question.
    - **Audience and placement:** `summary` for decision-makers, `body` or
-     `appendix` for practitioner detail. Keep each question's audiences;
+     `appendix` for practitioner detail (never `summary` for practitioners
+     only). Keep each question's audiences;
      propose any widening as a recommendation (`add-summary` or `placement`),
      don't apply it.
    - For each visual, decide the **intent** (step 2 of render below). If it

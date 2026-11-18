@@ -1,0 +1,119 @@
+visuals:
+  - id: v1
+    questions: [q1]
+    datasets: [loans_print, loans_ebook]
+    audience: [board, managers]
+    placement: summary
+    data: {path: data/derived/loans_by_quarter.csv}
+    data_note: "Join print and e-book loans on quarter"
+    intent:
+      visual_type: line
+      rationale: "Change over time; two series, the story is print's drop and e-book's recovery"
+      headline: "Total loans fell 18% during the renovation; e-book loans have since recovered and grown"
+      headline_status: confirmed
+      fields: {x: quarter, y: [print, ebook], names: {print: Print, ebook: E-book}}
+      highlight: [ebook]
+      callouts:
+        - {kind: rule, x: "Q2 '26", text: "Q2 renovation\nTotal 1,230 → 1,008 (−18%)"}
+      outlier_handling: {method: none_flagged}
+      units: "Loans (thousands)"
+    renderings:
+      md/document: {technique: svg}
+      html/document: {technique: svg}
+
+  - id: v2
+    questions: [q2]
+    datasets: [members]
+    audience: [board]
+    placement: summary
+    intent:
+      visual_type: number
+      rationale: "Single headline figure for decision-makers: how many people actively use the library"
+      headline: "Active membership grew 3% to 48,210 members"
+      headline_status: draft
+      fields: {value: value, label: metric, previous: previous}
+      outlier_handling: {method: none_flagged}
+      units: "Members"
+    renderings:
+      md/document: {technique: text}
+      html/document: {technique: text}
+
+  - id: v3
+    questions: [q3]
+    datasets: [branch_waits]
+    audience: [managers]
+    placement: body
+    intent:
+      visual_type: scatter
+      rationale: "Correlation between staffing and wait time; Riverside is the outlier with low staff and a long wait"
+      headline: "Riverside's average wait is far above every other branch at similar staffing"
+      headline_status: confirmed
+      fields:
+        x: staff_fte
+        y: avg_wait_min
+        label: branch
+        names: {staff_fte: "Staff (FTE)", avg_wait_min: "Avg wait (min)"}
+      highlight: [Riverside]
+      outlier_handling:
+        - {column: avg_wait_min, method: callout, reason: "Riverside's wait is the finding"}
+        - {column: staff_fte, method: accept, reason: "Central's size is real; noted"}
+    renderings:
+      md/document: {technique: svg}
+      html/document: {technique: svg}
+
+  - id: v5
+    questions: [q4]
+    datasets: [wait_minutes]
+    audience: [managers]
+    placement: body
+    intent:
+      visual_type: histogram
+      rationale: "Distribution of individual wait times; most are short but a long tail stretches past 30 minutes"
+      headline: "Median wait is 7.8 minutes, but some visitors wait more than 30 minutes"
+      headline_status: draft
+      fields:
+        value: wait_min
+        bins: 20
+        names: {count: Visits, wait_min: "Wait (minutes)"}
+      outlier_handling: {method: accept, reason: "Long waits are real visits and part of the story; not excluded"}
+      units: "Wait (minutes)"
+    renderings:
+      md/document: {technique: svg}
+      html/document: {technique: svg}
+
+  - id: v4
+    questions: [q3]
+    datasets: [branch_overview]
+    audience: [managers]
+    placement: appendix
+    intent:
+      visual_type: table
+      rationale: "Reference detail across four measures and 12 branches; no single takeaway"
+      headline: "Branch operations detail: visits, hours, staffing and events"
+      headline_status: title
+      fields:
+        columns: [branch, visits_k, open_hours, staff_fte, events]
+        sort: data
+        names: {visits_k: "Visits (k)", open_hours: "Open hours", staff_fte: "Staff (FTE)", events: "Events"}
+    renderings:
+      md/document: {technique: table}
+      html/document: {technique: table}
+
+recommendations:
+  - kind: merge
+    detail: "Print and e-book loans tell one story (same quarters, same measure); joined into data/derived/loans_by_quarter.csv"
+    affects: [v1]
+  - kind: cut
+    detail: "Café revenue answers no question in this request — it measures spending, not how many people actively use the library"
+    affects: [cafe_sales]
+  - kind: demote
+    detail: "branch_overview has four measures across 12 branches with no single takeaway — shown as a reference table instead of a chart"
+    affects: [v4]
+  - kind: add-summary
+    detail: "Riverside needing more staff bears on a budget decision, not just a managers' operational detail. Consider a one-line sentence or number for the board (e.g. 'Riverside waits 48 min vs. a 7–15 min range elsewhere'), or showing v3 itself to the board — the caller should decide which, if either."
+    affects: [v3]
+
+color_map:
+  E-book: accent
+  Print: context
+  Riverside: accent

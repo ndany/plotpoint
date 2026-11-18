@@ -1,0 +1,1 @@
+E8 v3 (q3 scatter, managers only) placed in summary; the docs didn't say whether practitioner-only visuals may lead, and the run flagged it for the caller. Recorded before D-36 (2026-11-18) said summary is the decision-makers' read

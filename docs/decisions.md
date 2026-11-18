@@ -472,3 +472,22 @@ catches it in recorded runs, not in a real caller's plan.
 **Revisit:** if callers accept nearly every widening (then apply and mark
 it, as with drafts), or a check on real plans is wanted (compare a result's
 audiences with the request's).
+
+## D-36: `summary` is the decision-makers' read
+
+**Chosen:** a visual for practitioners only goes in `body` or `appendix`,
+even when it's the main answer to its question. If the decision-makers need
+it, that's proposed under D-35. E8 already checked this; `storyboard.md` and
+`SKILL.md` now say it.
+**Alternatives:** a read-first item per audience (a managers' summary
+beside the board's); changes E8, the reference answer and what `summary`
+means to a reader of the document.
+**Rationale:** both 2026-11-17 runs, blind, said the docs didn't settle it
+and guessed differently (T1 `body`, T2 `summary`). One summary for the
+people who decide keeps the document's structure plain; practitioners read
+the body.
+**Cost:** a practitioner-only write-up has an empty summary unless its
+audiences include a decision-maker; the caller can name managers as
+decision-makers there.
+**Revisit:** if callers write documents for several decision-making
+audiences and ask for a summary each.

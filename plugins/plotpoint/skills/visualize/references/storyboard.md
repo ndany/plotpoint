@@ -34,6 +34,11 @@ the plan: propose it instead (below).
 | `body` | The main readers | Supporting evidence; practitioner detail |
 | `appendix` | Reference | Tables and full breakdowns |
 
+`summary` is the decision-makers' read, not "the most important chart". A
+visual for practitioners only goes in `body` or `appendix`, even when it's
+the main answer to its question; if the decision-makers need it too, propose
+that (below).
+
 Audience changes the level of detail, not the facts. When a question scoped to
 practitioners bears on a decision (for example, a fleet manager's question
 about which delivery vans are due for replacement, when replacing them is a
